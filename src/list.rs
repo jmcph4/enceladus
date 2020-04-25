@@ -1,10 +1,13 @@
+extern crate thiserror;
+
 use std::ops::{Index, IndexMut};
 use std::fmt;
 use std::fmt::{Debug, Display};
-use std::error::Error;
 use std::hash::Hash;
 
-#[derive(Copy, Clone, PartialEq, Hash, Debug)]
+use thiserror::Error;
+
+#[derive(Copy, Clone, PartialEq, Hash, Debug, Error)]
 pub enum ListError {
     OutOfBounds
 }
