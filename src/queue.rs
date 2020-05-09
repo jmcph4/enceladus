@@ -1,7 +1,26 @@
-#[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(dead_code)]
+extern crate thiserror;
+
+use std::fmt;
+
+use thiserror::Error;
+
+#[derive(Copy, Clone, PartialEq, Hash, Debug, Error)]
 pub enum QueueError {
     OutOfBounds
+}
+
+impl Eq for QueueError {}
+
+impl fmt::Display for QueueError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            QueueError::OutOfBounds => {
+                write!(f, "Insufficient elements")?
+            }
+        }
+    
+        Ok(())
+    }
 }
 
 pub trait Queue<T: Sized + Eq + Clone>: Eq + Clone {
