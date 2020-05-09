@@ -1,9 +1,28 @@
-use std::fmt::{Display, Debug};
+extern crate thiserror;
 
-#[derive(Copy, Clone, PartialEq, Hash, Debug)]
-#[allow(dead_code)]
+use std::fmt;
+use std::fmt::{Debug, Display};
+use std::hash::Hash;
+
+use thiserror::Error;
+
+#[derive(Copy, Clone, PartialEq, Hash, Debug, Error)]
 pub enum StackError {
     OutOfBounds
+}
+
+impl Eq for StackError {}
+
+impl fmt::Display for StackError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            StackError::OutOfBounds => {
+                write!(f, "Insufficient elements")?
+            }
+        }
+    
+        Ok(())
+    }
 }
 
 pub trait Stack<T: Sized + Clone+ Eq + Display + Debug>: Clone + Eq + Debug +
