@@ -4,6 +4,7 @@ pub mod stack;
 pub mod error;
 pub mod priority_queue;
 pub mod map;
+pub mod set;
 
 #[cfg(test)]
 mod tests {
