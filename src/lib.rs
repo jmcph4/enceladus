@@ -5,6 +5,7 @@ pub mod error;
 pub mod priority_queue;
 pub mod map;
 pub mod set;
+pub mod arraylist;
 
 #[cfg(test)]
 mod tests {
