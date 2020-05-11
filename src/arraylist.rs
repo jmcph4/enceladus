@@ -164,7 +164,11 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
     ///
     /// Equivalent to
     /// ```rust
-    /// list.insert(list.length(), elem);
+    /// use enceladus::list::List;
+    /// use enceladus::arraylist::ArrayList;
+    /// let elem: u8 = 12;
+    /// let mut list = ArrayList::new();
+    /// list.insert(list.length().unwrap(), elem);
     /// ```
     fn append(&mut self, elem: T) -> Result<(), EnceladusError> {
         self.elems.push(elem);
