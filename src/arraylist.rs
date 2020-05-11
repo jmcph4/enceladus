@@ -1,3 +1,5 @@
+//! An array-based implementation of the list ADT. Uses Rust's `Vec` internally.
+
 use std::ops::{Index, IndexMut};
 use std::fmt;
 use std::fmt::{Debug, Display};
@@ -72,6 +74,13 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         }
     }
 
+    /// Returns an immutable reference to the element at the specified position
+    /// in the list.
+    /// 
+    /// # Errors #
+    ///
+    ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
+    ///    the length of the string
     fn get(&self, pos: usize) -> Result<&T, EnceladusError> {
         if pos >= self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -83,6 +92,13 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         }
     }
     
+    /// Returns a mutable reference to the element at the specified position in
+    /// the list.
+    /// 
+    /// # Errors #
+    ///
+    ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
+    ///    the length of the list
     fn get_mut(&mut self, pos: usize) -> Result<&mut T, EnceladusError> {
         if pos >= self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -94,6 +110,12 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         }
     }
 
+    /// Sets the element at the specified position to the specified value
+    ///
+    /// # Error #
+    /// 
+    ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
+    ///    the length of the list
     fn set(&mut self, pos: usize, elem: T) -> Result<(), EnceladusError> {
         if pos >= self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -103,6 +125,12 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(())
     }
 
+    /// Inserts the specified value at the specified position within the list.
+    ///
+    /// # Errors #
+    /// 
+    ///  - `EnceladusError::OutOfBounds` if `pos` is strictly greater than the
+    ///    length of the list
     fn insert(&mut self, pos: usize, elem: T) -> Result<(), EnceladusError> {
         if pos > self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -112,6 +140,13 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(())
     }
 
+    /// Removes and returns the element at the specified position within the
+    /// list.
+    ///
+    /// # Errors #
+    ///
+    ///  - `EnceladusError` if `pos` is greater than or equal to the length of
+    ///    the list
     fn remove(&mut self, pos: usize) -> Result<T, EnceladusError> {
         if pos >= self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -120,15 +155,31 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(self.elems.remove(pos))
     }
 
+    /// Returns the number of elements in the list.
     fn length(&self) -> Result<usize, EnceladusError> {
         Ok(self.elems.len())
     }
 
+    /// Inserts the specified value at the end of the list.
+    ///
+    /// Equivalent to
+    /// ```rust
+    /// list.insert(list.length(), elem);
+    /// ```
     fn append(&mut self, elem: T) -> Result<(), EnceladusError> {
         self.elems.push(elem);
         Ok(())
     }
 
+    /// Swaps the specified elements within the list.
+    ///
+    /// If the two indices refer to the same element (i.e., are equal), no swap
+    /// is performed.
+    ///
+    /// # Errors #
+    ///
+    /// - `EnceladusError::OutOfBounds` if either index is greater than or equal
+    ///   to the length of the list
     fn swap(&mut self, a: usize, b: usize) -> Result<(), EnceladusError> {
         if a >= self.elems.len() || b >= self.elems.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -153,6 +204,9 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(())
     }
 
+    /// Determines if whether the specified value is within the list.
+    /// 
+    /// Uses linear scan, so is O(n) in the size of the list.
     fn contains(&self, elem: T) -> Result<bool, EnceladusError> {
         for element in self.elems.iter() {
             if *element == elem {
@@ -163,6 +217,10 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(false)
     }
 
+    /// Finds the positions of *all* instances of the specified value within the
+    /// list. Returns `None` if there are no instances of the value found.
+    ///
+    /// Uses linear scan, so is O(n) in the size of the list.
     fn find_all(&self, elem: T) -> Result<Option<Vec<usize>>, EnceladusError> {
         let mut res: Vec<usize> = Vec::new();
 
@@ -180,6 +238,10 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(Some(res))
     }
 
+    /// Finds the position of the *first* instance of the specified value within
+    /// the list.
+    ///
+    /// Uses linear scan, so is O(n) in the size of the list.
     fn find(&self, elem: T) -> Result<Option<usize>, EnceladusError> {
         for i in 0..self.elems.len() {
             let curr_elem: T = match self.elems.get(i) {
@@ -195,6 +257,9 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(None)
     }
 
+    /// Returns the number of instances of the specified value within the list.
+    ///
+    /// Uses linear scan, so is O(n) in the size of the list.
     fn count(&self, elem: T) -> Result<usize, EnceladusError> {
         let mut count: usize = 0;
 
@@ -212,6 +277,9 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         Ok(count)
     }
 
+    /// Removes all of the elements in the list.
+    ///
+    /// If the list is already empty, nothing is done.
     fn clear(&mut self) -> Result<(), EnceladusError> {
         if self.elems.is_empty() {
             return Ok(());
