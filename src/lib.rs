@@ -7,6 +7,7 @@ pub mod map;
 pub mod set;
 pub mod arraylist;
 pub mod heap;
+pub mod bubblesort;
 
 #[cfg(test)]
 mod tests {
