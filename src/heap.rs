@@ -35,7 +35,7 @@ impl<T: Eq> PartialEq for Heap<T> {
             }
         }
 
-        return true;
+        true
     }
 }
 
@@ -66,7 +66,7 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
    
     /// Removes the element with the highest priority.
     fn pop(&mut self) -> Result<T, EnceladusError> {
-        if self.elems.len() == 0 { /* bounds check */
+        if self.elems.is_empty() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -79,7 +79,7 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
     /// Returns an immutable reference to the highest priority element in the
     /// queue.
     fn peek(&self) -> Result<&T, EnceladusError> {
-        if self.elems.len() == 0 { /* bounds check */
+        if self.elems.is_empty() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -91,14 +91,10 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
 
     /// Returns the index of the first instance of the specified value.
     fn find(&self, elem: T) -> Result<Option<usize>, EnceladusError> {
-        let mut curr_pos: usize = 0;
-
-        for local_elem in self.elems.iter() {
+        for (curr_pos, local_elem) in self.elems.iter().enumerate() {
             if *local_elem == elem {
                 return Ok(Some(curr_pos));
             }
-
-            curr_pos += 1;
         }
 
         Ok(None)
