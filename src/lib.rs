@@ -6,6 +6,7 @@ pub mod priority_queue;
 pub mod map;
 pub mod set;
 pub mod arraylist;
+pub mod heap;
 
 #[cfg(test)]
 mod tests {
