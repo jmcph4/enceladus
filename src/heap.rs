@@ -1,3 +1,5 @@
+//! Heap-based priority queue implementation.
+
 use std::collections::BinaryHeap;
 use std::collections::binary_heap::IntoIter;
 use std::fmt::{Debug, Display};
@@ -56,11 +58,13 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
         }
     }
 
+    /// Adds an element to the priority queue.
     fn push(&mut self, elem: T) -> Result<(), EnceladusError> {
         self.elems.push(elem);
         Ok(())
     }
-
+   
+    /// Removes the element with the highest priority.
     fn pop(&mut self) -> Result<T, EnceladusError> {
         if self.elems.len() == 0 { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -72,6 +76,8 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
         }
     }
 
+    /// Returns an immutable reference to the highest priority element in the
+    /// queue.
     fn peek(&self) -> Result<&T, EnceladusError> {
         if self.elems.len() == 0 { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -83,6 +89,7 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
         }
     }
 
+    /// Returns the index of the first instance of the specified value.
     fn find(&self, elem: T) -> Result<Option<usize>, EnceladusError> {
         let mut curr_pos: usize = 0;
 
@@ -97,6 +104,7 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
         Ok(None)
     }
 
+    /// Returns the number of elements in the queue.
     fn length(&self) -> Result<usize, EnceladusError> {
         Ok(self.elems.len())
     }
