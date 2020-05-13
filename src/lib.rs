@@ -8,6 +8,7 @@ pub mod set;
 pub mod arraylist;
 pub mod heap;
 pub mod bubblesort;
+pub mod insertion_sort;
 
 #[cfg(test)]
 mod tests {
