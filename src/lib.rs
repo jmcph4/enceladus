@@ -7,6 +7,7 @@ pub mod map;
 pub mod set;
 pub mod arraylist;
 pub mod heap;
+pub mod hashmap;
 pub mod bubblesort;
 pub mod insertion_sort;
 
