@@ -165,6 +165,12 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Ok(keys.contains(&key))
     }
+    
+    fn contains_value(&self, value: V) -> Result<bool, EnceladusError> {
+        let values: HashSet<V> = self.get_values();
+
+        Ok(values.contains(&value))
+    }
 }
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
