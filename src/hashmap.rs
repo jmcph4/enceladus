@@ -70,7 +70,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        let bucket_index: usize = hasher.finish() as usize;
+        let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
 
         if bucket_index >= self.buckets.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -92,7 +92,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        let bucket_index: usize = hasher.finish() as usize;
+        let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
 
         if bucket_index >= self.buckets.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -114,7 +114,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        let bucket_index: usize = hasher.finish() as usize;
+        let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
         
         if bucket_index >= self.buckets.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -137,7 +137,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        let bucket_index: usize = hasher.finish() as usize;
+        let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
         
         if bucket_index >= self.buckets.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
@@ -157,7 +157,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        let bucket_index: usize = hasher.finish() as usize;
+        let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
         
         if bucket_index >= self.buckets.len() { /* bounds check */
             return Err(EnceladusError::OutOfBounds);
