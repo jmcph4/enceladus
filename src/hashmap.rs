@@ -132,6 +132,29 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Err(EnceladusError::OutOfBounds)
     }
+
+    fn remove(&mut self, key: K) -> Result<(), EnceladusError> {
+        /* hash key to derive bucket index */
+        let mut hasher: DefaultHasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bucket_index: usize = hasher.finish() as usize;
+        
+        if bucket_index >= self.buckets.len() { /* bounds check */
+            return Err(EnceladusError::OutOfBounds);
+        }
+
+        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+
+        /* linear scan over the bucket, searching for matching entry */
+        for (i, entry) in target_bucket.iter().enumerate() {
+            if entry.0 == key {
+                target_bucket.remove(i);
+                return Ok(());
+            }
+        }
+
+        Err(EnceladusError::OutOfBounds)
+    }
 }
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
