@@ -39,6 +39,33 @@ impl<K, V> PartialEq for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 impl<K, V> Eq for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     V: Sized + Eq + Clone + Hash {}
 
+impl<K, V> IntoIterator for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash {
+    type Item = (K, V);
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.items().into_iter()
+    }
+    
+}
+
+impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash {
+    fn new() -> Self {
+        let buckets_vec: Vec<Bucket<K, V>> = Vec::new();
+        
+        for i in 0..INIT_NUM_BUCKETS {
+            buckets_vec.push(Bucket::new());
+        }
+        
+        Self {
+            buckets: buckets_vec,
+            num_keys: 0,
+            load_factor: 0.0
+        }
+    }
+}
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     V: Sized + Eq + Clone + Hash {
@@ -67,6 +94,16 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             }
         }
         
+        res
+    }
+
+    fn items(&self) -> Vec<(K, V)> {
+        let mut res: Vec<(K, V)> = Vec::new();    
+
+        for key in self.get_keys() {
+            res.push((key, self.get(key).unwrap().clone()));
+        }
+
         res
     }
 }
