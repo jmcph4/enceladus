@@ -171,6 +171,13 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Ok(values.contains(&value))
     }
+
+    fn clear(&mut self) -> Result<(), EnceladusError> {
+        self.buckets.clear();
+        self.num_keys = 0;
+        self.update();
+        Ok(())
+    }
 }
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
