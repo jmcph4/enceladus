@@ -148,6 +148,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         /* build new entry and append onto target bucket */ 
         let new_entry: HashMapEntry<K, V> = HashMapEntry(key, value);
         target_bucket.push(new_entry);
+        self.num_keys += 1;
         self.update();
     
         Ok(())
@@ -169,6 +170,8 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         for (i, entry) in target_bucket.iter().enumerate() {
             if entry.0 == key {
                 target_bucket.remove(i);
+                self.num_keys -= 1;
+                self.update();
                 return Ok(());
             }
         }
