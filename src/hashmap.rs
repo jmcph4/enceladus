@@ -155,6 +155,10 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Err(EnceladusError::OutOfBounds)
     }
+
+    fn size(&self) -> Result<usize, EnceladusError> {
+        Ok(self.num_keys)
+    }
 }
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
