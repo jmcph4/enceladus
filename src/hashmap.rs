@@ -53,9 +53,9 @@ impl<K, V> IntoIterator for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     V: Sized + Eq + Clone + Hash {
     fn new() -> Self {
-        let buckets_vec: Vec<Bucket<K, V>> = Vec::new();
+        let mut buckets_vec: Vec<Bucket<K, V>> = Vec::new();
         
-        for i in 0..INIT_NUM_BUCKETS {
+        for _i in 0..INIT_NUM_BUCKETS {
             buckets_vec.push(Bucket::new());
         }
         
@@ -76,7 +76,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             return Err(EnceladusError::OutOfBounds);
         }
 
-        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+        let target_bucket: &Bucket<K, V> = &self.buckets[bucket_index];
 
         /* linear scan over the bucket, searching for matching entry */
         for entry in target_bucket {
@@ -98,10 +98,10 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             return Err(EnceladusError::OutOfBounds);
         }
 
-        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+        let target_bucket: &mut Bucket<K, V> = &mut self.buckets[bucket_index];
 
         /* linear scan over the bucket, searching for matching entry */
-        for entry in target_bucket {
+        for entry in target_bucket.iter_mut() {
             if entry.0 == key {
                 return Ok(Some(&mut entry.1));
             }
@@ -120,7 +120,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             return Err(EnceladusError::OutOfBounds);
         }
 
-        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+        let target_bucket: &mut Bucket<K, V> = &mut self.buckets[bucket_index];
 
         /* linear scan over the bucket, searching for matching entry */
         for entry in target_bucket {
@@ -143,7 +143,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             return Err(EnceladusError::OutOfBounds);
         }
 
-        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+        let target_bucket: &mut Bucket<K, V> = &mut self.buckets[bucket_index];
 
         /* linear scan over the bucket, searching for matching entry */
         for (i, entry) in target_bucket.iter().enumerate() {
@@ -218,7 +218,7 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         let mut res: Vec<(K, V)> = Vec::new();    
 
         for key in self.get_keys() {
-            res.push((key, self.get(key).unwrap().unwrap().clone()));
+            res.push((key.clone(), self.get(key).unwrap().unwrap().clone()));
         }
 
         res
