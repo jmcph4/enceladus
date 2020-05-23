@@ -87,6 +87,28 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Ok(None)
     }
+    
+    fn get_mut(&mut self, key: K) -> Result<Option<&mut V>, EnceladusError> {
+        /* hash key to derive bucket index */
+        let mut hasher: DefaultHasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bucket_index: usize = hasher.finish() as usize;
+
+        if bucket_index >= self.buckets.len() { /* bounds check */
+            return Err(EnceladusError::OutOfBounds);
+        }
+
+        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+
+        /* linear scan over the bucket, searching for matching entry */
+        for entry in target_bucket {
+            if entry.0 == key {
+                return Ok(Some(&mut entry.1));
+            }
+        }
+
+        Ok(None)
+    }
 }
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
