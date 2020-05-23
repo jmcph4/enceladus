@@ -1,5 +1,6 @@
 use std::collections::HashSet;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
+use std::collections::hash_map::DefaultHasher;
 
 use crate::error::EnceladusError;
 use crate::map::Map;
@@ -47,7 +48,6 @@ impl<K, V> IntoIterator for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     fn into_iter(self) -> Self::IntoIter {
         self.items().into_iter()
     }
-    
 }
 
 impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
@@ -64,6 +64,28 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             num_keys: 0,
             load_factor: 0.0
         }
+    }
+
+    fn get(&self, key: K) -> Result<Option<&V>, EnceladusError> {
+        /* hash key to derive bucket index */
+        let mut hasher: DefaultHasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bucket_index: usize = hasher.finish() as usize;
+
+        if bucket_index >= self.buckets.len() { /* bounds check */
+            return Err(EnceladusError::OutOfBounds);
+        }
+
+        let target_bucket: Bucket<K, V> = self.buckets[bucket_index];
+
+        /* linear scan over the bucket, searching for matching entry */
+        for entry in target_bucket {
+            if entry.0 == key {
+                return Ok(Some(&entry.1));
+            }
+        }
+
+        Ok(None)
     }
 }
 
@@ -101,7 +123,7 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         let mut res: Vec<(K, V)> = Vec::new();    
 
         for key in self.get_keys() {
-            res.push((key, self.get(key).unwrap().clone()));
+            res.push((key, self.get(key).unwrap().unwrap().clone()));
         }
 
         res
