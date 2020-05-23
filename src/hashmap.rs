@@ -159,6 +159,10 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     V: Sized + Eq + Clone + Hash {
+    pub fn load_factor(&self) -> f64 {
+        self.load_factor
+    }
+
     fn update(&mut self) {
         self.load_factor = (self.num_keys / self.buckets.len()) as f64;
     }
