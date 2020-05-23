@@ -133,6 +133,26 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         Err(EnceladusError::OutOfBounds)
     }
 
+    fn insert(&mut self, key: K, value: V) -> Result<(), EnceladusError> {
+        /* hash key to derive bucket index */
+        let mut hasher: DefaultHasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bucket_index: usize = hasher.finish() as usize;
+        
+        if bucket_index >= self.buckets.len() { /* bounds check */
+            return Err(EnceladusError::OutOfBounds);
+        }
+
+        let target_bucket: &mut Bucket<K, V> = &mut self.buckets[bucket_index];
+       
+        /* build new entry and append onto target bucket */ 
+        let new_entry: HashMapEntry<K, V> = HashMapEntry(key, value);
+        target_bucket.push(new_entry);
+        self.update();
+    
+        Ok(())
+    }
+
     fn remove(&mut self, key: K) -> Result<(), EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
