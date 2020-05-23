@@ -210,7 +210,16 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     }
 
     fn update(&mut self) {
-        self.load_factor = (self.num_keys / self.buckets.len()) as f64;
+        let mut occupied_buckets: u64 = 0;
+
+        /* count number of nonempty buckets */
+        for bucket in self.buckets.iter() {
+            if bucket.len() > 0 {
+                occupied_buckets += 1;
+            }
+        }
+
+        self.load_factor = occupied_buckets as f64 / self.buckets.len() as f64;
     }
 
     fn get_keys(&self) -> HashSet<K> where K: Eq + Hash {
