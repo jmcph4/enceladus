@@ -5,7 +5,7 @@ use std::collections::hash_map::DefaultHasher;
 use crate::error::EnceladusError;
 use crate::map::Map;
 
-const INIT_NUM_BUCKETS: usize = 8196;
+const INIT_NUM_BUCKETS: usize = 64;
 const GROWTH_FACTOR: usize = 2;
 const LOAD_THRESHOLD: f64 = 0.75;
 
@@ -178,7 +178,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             }
         }
 
-        Err(EnceladusError::OutOfBounds)
+        Err(EnceladusError::KeyNotFound)
     }
 
     fn size(&self) -> Result<usize, EnceladusError> {
@@ -278,6 +278,85 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         }
 
         res
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insert_normal() -> Result<(), EnceladusError> {
+        let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
+
+        let key: String = "Sally".to_string();
+        let value: usize = key.len() as usize;        
+
+        let actual_res: Result<(), EnceladusError> =
+            actual_hashmap.insert(key, value);
+
+        let expected_res: Result<(), EnceladusError> = Ok(());
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_hashmap.size()?, 1);
+        Ok(())
+    }
+    
+    #[test]
+    fn test_remove_normal() -> Result<(), EnceladusError> {
+        let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
+
+        let key: String = "Sally".to_string();
+        let value: usize = key.len() as usize;        
+
+        actual_hashmap.insert(key.clone(), value)?;
+
+        let actual_res: Result<(), EnceladusError> = actual_hashmap.remove(key);
+
+        let expected_res: Result<(), EnceladusError> = Ok(());
+        let expected_hashmap: HashMap<String, usize> = HashMap::new();
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_hashmap, expected_hashmap);
+        Ok(())
+    }
+    
+    #[test]
+    fn test_insert_duplicate() -> Result<(), EnceladusError> {
+        let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
+
+        let key: String = "Sally".to_string();
+        let value: usize = key.len() as usize;        
+
+        actual_hashmap.insert(key.clone(), value)?;
+
+        let actual_res: Result<(), EnceladusError> =
+            actual_hashmap.insert(key.clone(), value + 1);
+
+        let expected_res: Result<(), EnceladusError> = Ok(());
+
+        let mut expected_hashmap: HashMap<String, usize> = HashMap::new();
+        expected_hashmap.insert(key.clone(), value + 1)?;
+
+        assert_eq!(actual_res, expected_res);
+        Ok(())
+    }
+
+    #[test]
+    fn test_remove_nonexistant() -> Result<(), EnceladusError> {
+        let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
+
+        let key: String = "Sally".to_string();
+        let _value: usize = key.len() as usize;        
+
+        let actual_res: Result<(), EnceladusError> = actual_hashmap.remove(key);
+
+        let expected_res: Result<(), EnceladusError> = Err(EnceladusError::KeyNotFound);
+        let expected_hashmap: HashMap<String, usize> = HashMap::new();
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_hashmap, expected_hashmap);
+        Ok(())
     }
 }
 
