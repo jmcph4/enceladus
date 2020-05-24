@@ -5,7 +5,9 @@ use std::collections::hash_map::DefaultHasher;
 use crate::error::EnceladusError;
 use crate::map::Map;
 
-const INIT_NUM_BUCKETS: usize = 2048;
+const INIT_NUM_BUCKETS: usize = 8196;
+const GROWTH_FACTOR: usize = 2;
+const LOAD_THRESHOLD: f64 = 0.75;
 
 #[derive(Clone, Debug)]
 struct HashMapEntry<K, V>(K, V);
@@ -220,6 +222,28 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         }
 
         self.load_factor = occupied_buckets as f64 / self.buckets.len() as f64;
+
+        if self.load_factor >= LOAD_THRESHOLD {
+            self.rehash();
+        }
+    }
+
+    fn rehash(&mut self) {
+        let new_num_buckets: usize = self.buckets.len() * GROWTH_FACTOR;
+        let items: Vec<(K, V)> = self.items();
+
+        self.buckets.clear();
+        self.buckets = Vec::new();
+
+        /* initalise new buckets */
+        for _i in 0..new_num_buckets {
+            self.buckets.push(Bucket::new());
+        }
+
+        /* restore data */
+        for (key, value) in items {
+            self.insert(key, value).unwrap();
+        }
     }
 
     fn get_keys(&self) -> HashSet<K> where K: Eq + Hash {
