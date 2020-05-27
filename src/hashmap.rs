@@ -1,3 +1,6 @@
+//! An array-based separate chaining hash table, implementing the map ADT. Uses
+//! Rust's `Vec` internally
+
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::collections::hash_map::DefaultHasher;
@@ -68,6 +71,19 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         }
     }
 
+    /// Retrieves the value associated with the provided key and `None` if the
+    /// key is not found.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(n)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    ///
+    /// The linear worst-case time complexity for this method is due to the
+    /// possibility (although **extremely** unlikely), that retrieval will
+    /// require a full traversal of a bucket that contains every key-value pair.
     fn get(&self, key: K) -> Result<Option<&V>, EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
@@ -90,6 +106,19 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         Ok(None)
     }
     
+    /// Provides a mutable view to the value associated with the provided key
+    /// and `None` if the key is not found.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(n)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    ///
+    /// The linear worst-case time complexity for this method is due to the
+    /// possibility (although **extremely** unlikely), that retrieval will
+    /// require a full traversal of a bucket that contains every key-value pair.
     fn get_mut(&mut self, key: K) -> Result<Option<&mut V>, EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
@@ -112,6 +141,18 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         Ok(None)
     }
 
+    /// Sets the value associated with the provided key.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(n)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    ///
+    /// The linear worst-case time complexity for this method is due to the
+    /// possibility (although **extremely** unlikely), that updating will
+    /// require a full traversal of a bucket that contains every key-value pair.
     fn set(&mut self, key: K, value: V) -> Result<(), EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
@@ -132,9 +173,25 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
             }
         }
 
-        Err(EnceladusError::OutOfBounds)
+        Err(EnceladusError::KeyNotFound)
     }
-
+    
+    /// Inserts the key-value mapping into the hash table
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(n)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    ///
+    /// Note that this method uses constant space **per call**. Obviously the
+    /// overall space complexity of adding additional key-value entries into the
+    /// hash table is O(n) in the number of entries.
+    ///
+    /// The linear worst-case time complexity for this method is due to the
+    /// possibility (although **extremely** unlikely), that insertion will
+    /// require a full traversal of a bucket that contains every key-value pair.
     fn insert(&mut self, key: K, value: V) -> Result<(), EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
@@ -155,7 +212,24 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     
         Ok(())
     }
-
+    
+    /// Removes the key-value mapping from the hash table.
+    ///
+    /// # Errors #
+    ///
+    /// - `EnceladusError::KeyNotFound` if `key` is not currently stored within
+    ///     the hash table
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(n)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    ///
+    /// The linear worst-case time complexity for this method is due to the
+    /// possibility (although **extremely** unlikely), that removal will
+    /// require a full traversal of a bucket that contains every key-value pair.
     fn remove(&mut self, key: K) -> Result<(), EnceladusError> {
         /* hash key to derive bucket index */
         let mut hasher: DefaultHasher = DefaultHasher::new();
@@ -181,22 +255,58 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         Err(EnceladusError::KeyNotFound)
     }
 
+    /// Returns the number of key-value pairs stored within the hash table.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(1)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
     fn size(&self) -> Result<usize, EnceladusError> {
         Ok(self.num_keys)
     }
 
+    /// Determines whether or not the provided key is currently stored within
+    /// the hash table.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(n) | O(n)    | O(n)  |
+    /// | Space | O(n) | O(n)    | O(n)  |
     fn contains_key(&self, key: K) -> Result<bool, EnceladusError> {
         let keys: HashSet<K> = self.get_keys();
 
         Ok(keys.contains(&key))
     }
     
+    /// Determines whether or not the provided value is currently stored within
+    /// the hash table.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(n) | O(n)    | O(n)  |
+    /// | Space | O(n) | O(n)    | O(n)  |
     fn contains_value(&self, value: V) -> Result<bool, EnceladusError> {
         let values: HashSet<V> = self.get_values();
 
         Ok(values.contains(&value))
     }
 
+    /// Removes all key-value pairs from the hash table.
+    ///
+    /// # Performance #
+    ///
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(1)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    /// 
+    /// Uses Rust's `Vec::clear` internally to clear bucket container.
     fn clear(&mut self) -> Result<(), EnceladusError> {
         self.buckets.clear();
         self.num_keys = 0;
@@ -207,6 +317,15 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
 impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     V: Sized + Eq + Clone + Hash {
+    /// Returns the current load factor of the hash table
+    ///
+    /// # Performance #
+    /// |       | Best | Average | Worst |
+    /// |-------|------|---------|-------|
+    /// | Time  | O(1) | O(1)    | O(1)  |
+    /// | Space | O(1) | O(1)    | O(1)  |
+    /// 
+    /// This method is constant-time as load factor is stored as table metadata.
     pub fn load_factor(&self) -> f64 {
         self.load_factor
     }
