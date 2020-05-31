@@ -10,6 +10,7 @@ pub mod heap;
 pub mod hashmap;
 pub mod bubblesort;
 pub mod insertion_sort;
+pub mod graph;
 
 #[cfg(test)]
 mod tests {
