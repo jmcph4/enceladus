@@ -11,13 +11,13 @@ pub trait Graph<V: Sized + Clone + Eq + Display + Debug,
     
     fn get_vertex(&self, vertex: VertexNumber) ->
         Result<Option<&V>, EnceladusError>;
-    fn get_mut_vertex(&self, vertex: VertexNumber) ->
+    fn get_mut_vertex(&mut self, vertex: VertexNumber) ->
         Result<Option<&mut V>, EnceladusError>;
     fn set_vertex(&mut self, vertex: VertexNumber, label: V) ->
         Result<(), EnceladusError>;
     
     fn get_edge(&self, edge: EdgeNumber) -> Result<Option<&E>, EnceladusError>;
-    fn get_mut_edge(&self, edge: EdgeNumber) ->
+    fn get_mut_edge(&mut self, edge: EdgeNumber) ->
         Result<Option<&mut E>, EnceladusError>;
     fn set_edge(&mut self, edge: EdgeNumber, label: E) ->
         Result<(), EnceladusError>;
