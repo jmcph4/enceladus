@@ -70,5 +70,10 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     Result<Option<&mut V>, EnceladusError> {
         self.vertex_labels.get_mut(vertex)
     }
+
+    fn set_vertex(&mut self, vertex: VertexNumber, label: V) ->
+    Result<(), EnceladusError> {
+        self.vertex_labels.set(vertex, label)
+    }
 }
 
