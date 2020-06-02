@@ -1,4 +1,5 @@
 use std::fmt::{Display, Debug};
+use std::fmt;
 use std::hash::Hash;
 
 use crate::hashmap::HashMap;
@@ -12,6 +13,14 @@ struct AdjMatGraph<V, E> {
     adjacency_matrix: Vec<Vec<u64>>,            /* adjacency matrix */
     vertex_labels: HashMap<VertexNumber, V>,    /* vertex labels */
     edge_labels: HashMap<EdgeNumber, E>         /* edge labels */
+}
+
+impl<V, E> Display for AdjMatGraph<V, E> where
+    V: Sized + Clone + Eq + Display + Debug + Hash,
+    E: Sized + Clone + Eq + Display + Debug + Hash {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({},{})", self.num_vertices, self.num_edges)
+    }
 }
 
 impl<V, E> PartialEq for AdjMatGraph<V, E> where
