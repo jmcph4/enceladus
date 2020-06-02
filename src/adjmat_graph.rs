@@ -61,8 +61,14 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
     }
 
-    fn get_vertex(&self, vertex: VertexNumber) -> Result<Option<&V>, EnceladusError> {
+    fn get_vertex(&self, vertex: VertexNumber) ->
+    Result<Option<&V>, EnceladusError> {
         self.vertex_labels.get(vertex)
+    }
+
+    fn get_mut_vertex(&self, vertex: VertexNumber) ->
+    Result<Option<&mut V>, EnceladusError> {
+        self.vertex_labels.get_mut(vertex)
     }
 }
 
