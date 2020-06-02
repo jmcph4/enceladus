@@ -8,7 +8,7 @@ use crate::hashmap::HashMap;
 use crate::graph::{VertexNumber, EdgeNumber, Graph};
 
 #[derive(Clone, Debug)]
-struct AdjMatGraph<V, E> {
+pub struct AdjMatGraph<V, E> {
     num_vertices: usize,                        /* number of vertices */
     num_edges: usize,                           /* number of edges */
     adjacency_matrix: Vec<Vec<u64>>,            /* adjacency matrix */
