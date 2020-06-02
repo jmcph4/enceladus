@@ -92,11 +92,11 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     }
 
     fn order(&self) -> Result<usize, EnceladusError> {
-        self.num_vertices
+       Ok(self.num_vertices)
     }
 
     fn size(&self) -> Result<usize, EnceladusError> {
-        self.num_edges
+        Ok(self.num_edges)
     }
 }
 
