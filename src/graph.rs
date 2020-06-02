@@ -42,6 +42,8 @@ pub trait Graph<V: Sized + Clone + Eq + Display + Debug,
 
     fn neighbours(&self, vertex: VertexNumber) ->
         Result<Vec<VertexNumber>, EnceladusError>;
+    fn incident_edges(&self, vertex: VertexNumber) ->
+        Result<Vec<EdgeNumber>, EnceladusError>;
     fn endpoints(&self, edge: EdgeNumber) ->
         Result<(VertexNumber, VertexNumber), EnceladusError>;
 
