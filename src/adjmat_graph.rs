@@ -97,13 +97,19 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         self.vertex_labels.insert(self.num_vertices, label).unwrap();
 
         /* expand adjacency matrix */
-        let mut new_column: Vec<u64> = Vec::new();
+        /* add row */
+        let mut new_row: Vec<u64> = Vec::new();
         
         for _i in 0..=self.num_vertices {
-            new_column.push(0);
+            new_row.push(0);
         }
 
-        self.adjacency_matrix.push(new_column);
+        self.adjacency_matrix.push(new_row);
+
+        /* add column */
+        for i in 0..=self.num_vertices {
+            self.adjacency_matrix[i].push(0);
+        }
 
         /* increment number of vertices */
         self.num_vertices += 1;
