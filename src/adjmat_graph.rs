@@ -91,6 +91,26 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         self.edge_labels.set(edge, label)
     }
 
+    fn insert_vertex(&mut self, label: V) ->
+    Result<VertexNumber, EnceladusError> {
+        /* add vertex label */
+        self.vertex_labels.insert(self.num_vertices, label).unwrap();
+
+        /* expand adjacency matrix */
+        let mut new_column: Vec<u64> = Vec::new();
+        
+        for _i in 0..=self.num_vertices {
+            new_column.push(0);
+        }
+
+        self.adjacency_matrix.push(new_column);
+
+        /* increment number of vertices */
+        self.num_vertices += 1;
+
+        Ok(self.num_vertices - 1)
+    }
+
     fn order(&self) -> Result<usize, EnceladusError> {
        Ok(self.num_vertices)
     }
