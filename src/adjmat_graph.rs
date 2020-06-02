@@ -75,5 +75,20 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     Result<(), EnceladusError> {
         self.vertex_labels.set(vertex, label)
     }
+
+    fn get_edge(&self, edge: EdgeNumber) ->
+    Result<Option<&E>, EnceladusError> {
+        self.edge_labels.get(edge)
+    }
+
+    fn get_mut_edge(&self, edge: EdgeNumber) ->
+    Result<Option<&mut E>, EnceladusError> {
+        self.edge_labels.get_mut(edge)
+    }
+
+    fn set_edge(&mut self, edge: EdgeNumber, label: E) ->
+    Result<(), EnceladusError> {
+        self.edge_labels.set(edge, label)
+    }
 }
 
