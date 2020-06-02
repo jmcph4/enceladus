@@ -2,9 +2,9 @@ use std::fmt::{Display, Debug};
 use std::fmt;
 use std::hash::Hash;
 
+use crate::map::Map;
 use crate::hashmap::HashMap;
-
-use crate::graph::{VertexNumber, EdgeNumber};
+use crate::graph::{VertexNumber, EdgeNumber, Graph};
 
 #[derive(Clone, Debug)]
 struct AdjMatGraph<V, E> {
@@ -46,4 +46,18 @@ impl<V, E> PartialEq for AdjMatGraph<V, E> where
 impl<V, E> Eq for AdjMatGraph<V, E> where
     V: Sized + Clone + Eq + Display + Debug + Hash,
     E: Sized + Clone + Eq + Display + Debug + Hash {}
+
+impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
+    V: Sized + Clone + Eq + Display + Debug + Hash,
+    E: Sized + Clone + Eq + Display + Debug + Hash {
+    fn new() -> Self {
+        AdjMatGraph {
+            num_vertices: 0,
+            num_edges: 0,
+            adjacency_matrix: Vec::new(),
+            vertex_labels: HashMap::new(),
+            edge_labels: HashMap::new()
+        }
+    }
+}
 
