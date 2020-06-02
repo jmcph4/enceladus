@@ -2,6 +2,7 @@ use std::fmt::{Display, Debug};
 use std::fmt;
 use std::hash::Hash;
 
+use crate::error::EnceladusError;
 use crate::map::Map;
 use crate::hashmap::HashMap;
 use crate::graph::{VertexNumber, EdgeNumber, Graph};
@@ -58,6 +59,10 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
             vertex_labels: HashMap::new(),
             edge_labels: HashMap::new()
         }
+    }
+
+    fn get_vertex(&self, vertex: VertexNumber) -> Result<Option<&V>, EnceladusError> {
+        self.vertex_labels.get(vertex)
     }
 }
 
