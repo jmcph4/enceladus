@@ -90,5 +90,13 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     Result<(), EnceladusError> {
         self.edge_labels.set(edge, label)
     }
+
+    fn order(&self) -> Result<usize, EnceladusError> {
+        self.num_vertices
+    }
+
+    fn size(&self) -> Result<usize, EnceladusError> {
+        self.num_edges
+    }
 }
 
