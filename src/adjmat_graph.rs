@@ -117,6 +117,36 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(self.num_vertices - 1)
     }
 
+    fn remove_vertex(&mut self, vertex: VertexNumber) ->
+    Result<(), EnceladusError> {
+        if !self.vertex_labels.contains_key(vertex)? {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        /* prune all edges attached to this vertex */
+        let incident_edges: Vec<EdgeNumber> = self.incident_edges(vertex)?;
+
+        for edge in incident_edges.iter() {
+            self.remove_edge(*edge)?;
+        }
+
+        /* remove label */
+        self.vertex_labels.remove(vertex);
+
+        /* remove row */
+        self.adjacency_matrix.remove(vertex);
+
+        /* remove column */
+        for i in 0..self.num_vertices-1 {
+            self.adjacency_matrix[i].remove(vertex);
+        }
+
+        /* decrement number of vertices */
+        self.num_vertices -= 1;
+
+        Ok(())
+    }
+
     fn order(&self) -> Result<usize, EnceladusError> {
        Ok(self.num_vertices)
     }
