@@ -10,16 +10,16 @@ pub trait Graph<V: Sized + Clone + Eq + Display + Debug,
     fn new() -> Self;
     
     fn get_vertex(&self, vertex: VertexNumber) ->
-        Result<Option<V>, EnceladusError>;
+        Result<Option<&V>, EnceladusError>;
     fn get_mut_vertex(&self, vertex: VertexNumber) ->
-        Result<Option<V>, EnceladusError>;
+        Result<Option<&mut V>, EnceladusError>;
     fn set_vertex(&mut self, vertex: VertexNumber, label: V) ->
         Result<(), EnceladusError>;
     
-    fn get_edge(&self, edge: EdgeNumber) -> Result<Option<V>, EnceladusError>;
+    fn get_edge(&self, edge: EdgeNumber) -> Result<Option<&E>, EnceladusError>;
     fn get_mut_edge(&self, edge: EdgeNumber) ->
-        Result<Option<V>, EnceladusError>;
-    fn set_edge(&mut self, edge: EdgeNumber, label: V) ->
+        Result<Option<&mut E>, EnceladusError>;
+    fn set_edge(&mut self, edge: EdgeNumber, label: E) ->
         Result<(), EnceladusError>;
     
     fn insert_vertex(&mut self, label: V) ->
