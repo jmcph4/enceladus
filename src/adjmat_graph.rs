@@ -206,6 +206,20 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(self.num_edges)
     }
 
+    fn degree(&self, vertex: VertexNumber) -> Result<usize, EnceladusError> {
+        if !self.vertex_labels.contains_key(vertex)? {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        let mut degree: u64 = 0;
+
+        for i in 0..self.num_vertices {
+            degree += self.adjacency_matrix[vertex][i];
+        }
+
+        Ok(degree as usize)
+    } 
+
     fn incident_edges(&self, vertex: VertexNumber) ->
     Result<Vec<EdgeNumber>, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
