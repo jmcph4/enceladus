@@ -133,7 +133,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
 
         /* remove label */
-        self.vertex_labels.remove(vertex);
+        self.vertex_labels.remove(vertex)?;
 
         /* remove row */
         self.adjacency_matrix.remove(vertex);
@@ -157,10 +157,10 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
 
         /* add edge label */
-        self.edge_labels.insert(self.num_edges, label);
+        self.edge_labels.insert(self.num_edges, label)?;
 
         /* add vertices to endpoint store */
-        self.endpoints.insert(self.num_edges, (a, b));
+        self.endpoints.insert(self.num_edges, (a, b))?;
 
         /* update the adjacency matrix accordingly (note that this also handles
          * the case of a == b */

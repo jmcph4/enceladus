@@ -24,10 +24,10 @@ impl fmt::Display for EnceladusError {
                 write!(f, "Requested key does not exist")?
             },
             EnceladusError::VertexNotFound => {
-                write!(f, "Requested vertex does not exist");
+                write!(f, "Requested vertex does not exist")?
             },
             EnceladusError::EdgeNotFound => {
-                write!(f, "Requested edge does not exist");
+                write!(f, "Requested edge does not exist")?
             }
         }
     
