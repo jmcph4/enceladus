@@ -274,5 +274,14 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
 
         Ok(incident)
     }
+
+    fn endpoints(&self, edge: EdgeNumber) ->
+    Result<(VertexNumber, VertexNumber), EnceladusError> {
+        if !self.edge_labels.contains_key(edge)? {
+            return Err(EnceladusError::EdgeNotFound);
+        }
+
+        Ok(*self.endpoints.get(edge)?.unwrap())
+    }
 }
 
