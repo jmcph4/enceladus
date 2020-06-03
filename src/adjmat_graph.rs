@@ -300,5 +300,16 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
 
         Ok(*self.endpoints.get(edge)?.unwrap())
     }
+
+    fn clear(&mut self) -> Result<(), EnceladusError> {
+        self.vertex_labels.clear()?;
+        self.edge_labels.clear()?;
+        self.adjacency_matrix.clear();
+        self.endpoints.clear()?;
+        self.num_vertices = 0;
+        self.num_edges = 0;
+
+        Ok(())
+    }
 }
 
