@@ -205,5 +205,25 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     fn size(&self) -> Result<usize, EnceladusError> {
         Ok(self.num_edges)
     }
+
+    fn incident_edges(&self, vertex: VertexNumber) ->
+    Result<Vec<EdgeNumber>, EnceladusError> {
+        if !self.vertex_labels.contains_key(vertex)? {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        let mut edges: Vec<EdgeNumber> = Vec::new();
+
+        for i in 0..self.num_edges {
+            let (a, b): (VertexNumber, VertexNumber) =
+                *self.endpoints.get(i)?.unwrap();
+            
+            if vertex == a || vertex == b {
+                edges.push(i);
+            }
+        }
+    
+        Ok(edges)
+    }
 }
 
