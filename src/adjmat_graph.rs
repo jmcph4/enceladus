@@ -220,6 +220,16 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(degree as usize)
     } 
 
+    fn is_adjacent(&self, a: VertexNumber, b: VertexNumber) ->
+    Result<bool, EnceladusError> {
+        if !(self.vertex_labels.contains_key(a)? &&
+            self.vertex_labels.contains_key(b)?) {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        Ok(self.adjacency_matrix[a][b] > 0)
+    }
+
     fn incident_edges(&self, vertex: VertexNumber) ->
     Result<Vec<EdgeNumber>, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
