@@ -249,5 +249,30 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     
         Ok(edges)
     }
+
+    fn is_incident(&self, vertex: VertexNumber, edge: EdgeNumber) ->
+    Result<bool, EnceladusError> {
+        if !self.vertex_labels.contains_key(vertex)? {
+            return Err(EnceladusError::VertexNotFound);
+        }
+        
+        if !self.edge_labels.contains_key(edge)? {
+            return Err(EnceladusError::EdgeNotFound);
+        }
+
+        let mut incident: bool = false;
+
+        for curr_edge in 0..self.num_edges {
+            let (a, b): (VertexNumber, VertexNumber) =
+                *self.endpoints.get(curr_edge)?.unwrap();
+
+            if edge == curr_edge && (vertex == a || vertex == b) {
+                incident = true;
+                break;
+            }
+        }
+
+        Ok(incident)
+    }
 }
 
