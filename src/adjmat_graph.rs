@@ -12,6 +12,7 @@ pub struct AdjMatGraph<V, E> {
     num_vertices: usize,                        /* number of vertices */
     num_edges: usize,                           /* number of edges */
     adjacency_matrix: Vec<Vec<u64>>,            /* adjacency matrix */
+    endpoints: HashMap<EdgeNumber, (VertexNumber, VertexNumber)>,
     vertex_labels: HashMap<VertexNumber, V>,    /* vertex labels */
     edge_labels: HashMap<EdgeNumber, E>         /* edge labels */
 }
@@ -56,6 +57,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
             num_vertices: 0,
             num_edges: 0,
             adjacency_matrix: Vec::new(),
+            endpoints: HashMap::new(),
             vertex_labels: HashMap::new(),
             edge_labels: HashMap::new()
         }
@@ -145,6 +147,30 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         self.num_vertices -= 1;
 
         Ok(())
+    }
+
+    fn insert_edge(&mut self, label: E, a: VertexNumber, b: VertexNumber) ->
+    Result<EdgeNumber, EnceladusError> {
+        if !(self.vertex_labels.contains_key(a)? &&
+            self.vertex_labels.contains_key(b)?) {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        /* add edge label */
+        self.edge_labels.insert(self.num_edges, label);
+
+        /* add vertices to endpoint store */
+        self.endpoints.insert(self.num_edges, (a, b));
+
+        /* update the adjacency matrix accordingly (note that this also handles
+         * the case of a == b */
+        self.adjacency_matrix[a][b] += 1;
+        self.adjacency_matrix[b][a] += 1;
+
+        /* update number of edges */
+        self.num_edges += 1;
+
+        Ok(self.num_edges - 1)
     }
 
     fn order(&self) -> Result<usize, EnceladusError> {
