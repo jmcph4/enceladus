@@ -275,6 +275,23 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(incident)
     }
 
+    fn neighbours(&self, vertex: VertexNumber) ->
+    Result<Vec<VertexNumber>, EnceladusError> {
+        if !self.vertex_labels.contains_key(vertex)? {
+            return Err(EnceladusError::VertexNotFound);
+        }
+
+        let mut neighbours: Vec<VertexNumber> = Vec::new();
+
+        for i in 0..self.num_vertices {
+            if self.adjacency_matrix[vertex][i] > 0 {
+                neighbours.push(i);
+            }
+        }
+
+        Ok(neighbours)
+    }
+
     fn endpoints(&self, edge: EdgeNumber) ->
     Result<(VertexNumber, VertexNumber), EnceladusError> {
         if !self.edge_labels.contains_key(edge)? {
