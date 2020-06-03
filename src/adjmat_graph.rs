@@ -173,6 +173,31 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(self.num_edges - 1)
     }
 
+    fn remove_edge(&mut self, edge: EdgeNumber) -> Result<(), EnceladusError> {
+        if !self.edge_labels.contains_key(edge)? {
+            return Err(EnceladusError::EdgeNotFound);
+        }
+
+        /* remove label */
+        self.edge_labels.remove(edge)?;
+
+        /* store endpoints for adjacency matrix update */
+        let (a, b): (VertexNumber, VertexNumber) =
+            *self.endpoints.get(edge)?.unwrap();
+
+        /* remove entry in endpoints table */
+        self.endpoints.remove(edge)?;
+
+        /* update adjacency matrix accordingly */
+        self.adjacency_matrix[a][b] -= 1;
+        self.adjacency_matrix[b][a] -= 1;
+
+        /* decrement number of edges */
+        self.num_edges -= 1;
+        
+        Ok(())
+    }
+
     fn order(&self) -> Result<usize, EnceladusError> {
        Ok(self.num_vertices)
     }
