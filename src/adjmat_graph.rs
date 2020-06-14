@@ -29,6 +29,7 @@ impl<V, E> PartialEq for AdjMatGraph<V, E> where
     V: Sized + Clone + Eq + Display + Debug + Hash,
     E: Sized + Clone + Eq + Display + Debug + Hash {
     fn eq(&self, other: &Self) -> bool {
+        /* check if this is literally the same graph (i.e. automorphism) */
         if self.num_vertices == other.num_vertices &&
         self.num_edges == other.num_edges && 
         self.vertex_labels == other.vertex_labels &&
@@ -36,12 +37,12 @@ impl<V, E> PartialEq for AdjMatGraph<V, E> where
             return true;
         }
 
-        if self.num_vertices != other.num_vertices ||
-        self.num_edges != other.num_edges {
-            return false;
-        }
-
-        unimplemented!()
+        self.num_vertices == other.num_vertices &&
+        self.num_edges == other.num_edges &&
+        self.adjacency_matrix == other.adjacency_matrix &&
+        self.endpoints == other.endpoints &&
+        self.vertex_labels == other.vertex_labels &&
+        self.edge_labels == other.edge_labels
     }
 }
 
