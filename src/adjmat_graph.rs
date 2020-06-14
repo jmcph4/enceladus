@@ -314,3 +314,24 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_normal() {
+        let actual_graph: AdjMatGraph<u64, u64> = AdjMatGraph::new();
+
+        let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
+            num_vertices: 0,
+            num_edges: 0,
+            adjacency_matrix: vec![],
+            endpoints: HashMap::new(),
+            vertex_labels: HashMap::new(),
+            edge_labels: HashMap::new()        
+        };
+
+        assert_eq!(actual_graph, expected_graph);
+    }
+}
+
