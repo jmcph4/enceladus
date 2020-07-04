@@ -350,7 +350,7 @@ mod tests {
         let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
             num_vertices: 1,
             num_edges: 0,
-            adjacency_matrix: vec![vec![0], vec![0]],
+            adjacency_matrix: vec![vec![0]],
             endpoints: HashMap::new(),
             vertex_labels: {
                 let mut map: HashMap<VertexNumber, u64> = HashMap::new();
