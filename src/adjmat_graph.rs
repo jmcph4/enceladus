@@ -333,5 +333,35 @@ mod tests {
 
         assert_eq!(actual_graph, expected_graph);
     }
+
+    #[test]
+    fn test_insert_vertex_normal() {
+        let some_label: u64 = 33;
+
+        let mut actual_graph: AdjMatGraph<u64, u64> = AdjMatGraph::new();
+
+        let actual_res: Result<VertexNumber, EnceladusError> =
+            actual_graph.insert_vertex(some_label);
+
+        let expected_vertex_number: VertexNumber = 0;
+        let expected_res: Result<VertexNumber, EnceladusError> =
+            Ok(expected_vertex_number);
+
+        let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
+            num_vertices: 1,
+            num_edges: 0,
+            adjacency_matrix: vec![vec![0], vec![0]],
+            endpoints: HashMap::new(),
+            vertex_labels: {
+                let mut map: HashMap<VertexNumber, u64> = HashMap::new();
+                map.insert(0, some_label).unwrap();
+                map
+            },
+            edge_labels: HashMap::new()
+        };
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_graph, expected_graph);
+    }
 }
 
