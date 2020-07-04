@@ -435,5 +435,52 @@ mod tests {
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_graph, expected_graph);
     }
+
+    #[test]
+    fn test_insert_edge_normal() {
+        let some_vlabels: Vec<u64> = vec![33, 12];
+        let some_elabel: u64 = 3;
+
+        let mut actual_graph: AdjMatGraph<u64, u64> = AdjMatGraph::new();
+        let vertex_a: VertexNumber =
+            actual_graph.insert_vertex(some_vlabels[0]).unwrap();
+        let vertex_b: VertexNumber =
+            actual_graph.insert_vertex(some_vlabels[1]).unwrap();
+
+        let actual_res: Result<EdgeNumber, EnceladusError> =
+            actual_graph.insert_edge(some_elabel, vertex_a, vertex_b);
+
+        let actual_edge_number: EdgeNumber = actual_res.unwrap();
+
+        let expected_edge_number: EdgeNumber = 0;
+        let expected_res: Result<EdgeNumber, EnceladusError> =
+            Ok(expected_edge_number);
+
+        let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
+            num_vertices: 2,
+            num_edges: 1,
+            adjacency_matrix: vec![vec![0, 1], vec![1, 0]],
+            endpoints: {
+                let mut map: HashMap<EdgeNumber, (VertexNumber, VertexNumber)> =
+                    HashMap::new();
+                map.insert(actual_edge_number, (vertex_a, vertex_b)).unwrap();
+                map
+            },
+            vertex_labels: {
+                let mut map: HashMap<VertexNumber, u64> = HashMap::new();
+                map.insert(0, some_vlabels[0]).unwrap();
+                map.insert(1, some_vlabels[1]).unwrap();
+                map
+            },
+            edge_labels: {
+                let mut map: HashMap<EdgeNumber, u64> = HashMap::new();
+                map.insert(0, some_elabel).unwrap();
+                map
+            }
+        };
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_graph, expected_graph);
+    }
 }
 
