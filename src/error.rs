@@ -7,7 +7,9 @@ use thiserror::Error;
 #[derive(Copy, Clone, PartialEq, Hash, Debug, Error)]
 pub enum EnceladusError {
     OutOfBounds,
-    KeyNotFound
+    KeyNotFound,
+    VertexNotFound,
+    EdgeNotFound
 }
 
 impl Eq for EnceladusError {}
@@ -20,6 +22,12 @@ impl fmt::Display for EnceladusError {
             },
             EnceladusError::KeyNotFound => {
                 write!(f, "Requested key does not exist")?
+            },
+            EnceladusError::VertexNotFound => {
+                write!(f, "Requested vertex does not exist")?
+            },
+            EnceladusError::EdgeNotFound => {
+                write!(f, "Requested edge does not exist")?
             }
         }
     

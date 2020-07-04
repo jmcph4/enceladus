@@ -11,6 +11,7 @@ pub mod hashmap;
 pub mod bubblesort;
 pub mod insertion_sort;
 pub mod graph;
+pub mod adjmat_graph;
 
 #[cfg(test)]
 mod tests {
