@@ -363,7 +363,40 @@ mod tests {
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_graph, expected_graph);
     }
-    
+   
+    #[test]   
+    fn test_insert_two_vertices_normal() {
+        let some_labels: Vec<u64> = vec![33, 12];
+
+        let mut actual_graph: AdjMatGraph<u64, u64> = AdjMatGraph::new();
+
+        actual_graph.insert_vertex(some_labels[0]).unwrap();
+
+        let actual_res: Result<VertexNumber, EnceladusError> =
+            actual_graph.insert_vertex(some_labels[1]);
+        
+        let expected_vertex_number: VertexNumber = 1;
+        let expected_res: Result<VertexNumber, EnceladusError> =
+            Ok(expected_vertex_number);
+        
+        let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
+            num_vertices: 2,
+            num_edges: 0,
+            adjacency_matrix: vec![vec![0, 0], vec![0, 0]],
+            endpoints: HashMap::new(),
+            vertex_labels: {
+                let mut map: HashMap<VertexNumber, u64> = HashMap::new();
+                map.insert(0, some_labels[0]).unwrap();
+                map.insert(1, some_labels[1]).unwrap();
+                map
+            },
+            edge_labels: HashMap::new()
+        };
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_graph, expected_graph);
+    }
+
     #[test]
     fn test_remove_vertex_normal() {
         let some_label: u64 = 33;
