@@ -100,6 +100,16 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
 
         /* expand adjacency matrix */
+        
+        /* note that adding the new column BEFORE the new row avoids the issue
+           of a staggered adjacency matrix (additionally observe the invariant
+           that the adjacency matrix MUST ALWAYS BE SQUARE */
+
+        /* add column */
+        for i in 0..self.num_vertices {
+            self.adjacency_matrix[i].push(0);
+        }
+
         /* add row */
         let mut new_row: Vec<u64> = Vec::new();
         
@@ -108,11 +118,6 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
 
         self.adjacency_matrix.push(new_row);
-
-        /* add column */
-        for i in 0..=self.num_vertices {
-            self.adjacency_matrix[i].push(0);
-        }
 
         /* increment number of vertices */
         self.num_vertices += 1;
