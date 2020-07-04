@@ -126,6 +126,14 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
             return Err(EnceladusError::VertexNotFound);
         }
 
+        /* base case */
+        if self.num_vertices == 1 {
+            self.adjacency_matrix = vec![];
+            self.vertex_labels = HashMap::new();
+            self.num_vertices = 0;
+            return Ok(());
+        }
+
         /* prune all edges attached to this vertex */
         let incident_edges: Vec<EdgeNumber> = self.incident_edges(vertex)?;
 
