@@ -482,5 +482,43 @@ mod tests {
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_graph, expected_graph);
     }
+    
+    #[test]
+    fn test_remove_edge_normal() {
+        let some_vlabels: Vec<u64> = vec![33, 12];
+        let some_elabel: u64 = 3;
+
+        let mut actual_graph: AdjMatGraph<u64, u64> = AdjMatGraph::new();
+        let vertex_a: VertexNumber =
+            actual_graph.insert_vertex(some_vlabels[0]).unwrap();
+        let vertex_b: VertexNumber =
+            actual_graph.insert_vertex(some_vlabels[1]).unwrap();
+
+        let some_enum: EdgeNumber =
+            actual_graph.insert_edge(some_elabel, vertex_a, vertex_b).unwrap();
+
+        let actual_res: Result<(), EnceladusError> =
+            actual_graph.remove_edge(some_enum);
+
+        let expected_res: Result<(), EnceladusError> = Ok(());
+
+        let expected_graph: AdjMatGraph<u64, u64> = AdjMatGraph {
+            num_vertices: 2,
+            num_edges: 0,
+            adjacency_matrix: vec![vec![0, 0], vec![0, 0]],
+            endpoints: HashMap::new(),
+            vertex_labels: {
+                let mut map: HashMap<VertexNumber, u64> = HashMap::new();
+                map.insert(0, some_vlabels[0]).unwrap();
+                map.insert(1, some_vlabels[1]).unwrap();
+                map
+            },
+            edge_labels: HashMap::new()
+        };
+
+        assert_eq!(actual_res, expected_res);
+        assert_eq!(actual_graph, expected_graph);
+    }
+
 }
 
