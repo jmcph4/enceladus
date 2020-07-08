@@ -12,6 +12,7 @@ pub mod bubblesort;
 pub mod insertion_sort;
 pub mod graph;
 pub mod adjmat_graph;
+pub mod tree;
 
 #[cfg(test)]
 mod tests {
