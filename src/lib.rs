@@ -13,6 +13,7 @@ pub mod insertion_sort;
 pub mod graph;
 pub mod adjmat_graph;
 pub mod tree;
+pub mod arraytree;
 
 #[cfg(test)]
 mod tests {
