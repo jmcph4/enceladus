@@ -69,7 +69,9 @@ impl<V, E> Tree<V, E> for ArrayTree<V, E> where
     V: Sized + Clone + Eq + Display + Debug,
     E: Sized + Clone + Eq + Display + Debug {
     fn new() -> Self {
-        unimplemented!()
+        Self {
+            root: None
+        }
     }
 
     fn get_vertex(&self, vertex: VertexNumber) ->
