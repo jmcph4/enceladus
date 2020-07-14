@@ -7,6 +7,7 @@ use crate::tree::Tree;
 
 #[derive(Clone, Debug)]
 struct ArrayTreeNode<V, E> {
+    vnum: VertexNumber,
     vlabel: V,
     children: Vec<(Option<E>, ArrayTreeNode<V, E>)>
 }
@@ -20,7 +21,8 @@ impl<V, E> PartialEq for ArrayTreeNode<V, E> where
     V: Sized + Clone + Eq + Display + Debug,
     E: Sized + Clone + Eq + Display + Debug {
     fn eq(&self, other: &Self) -> bool {
-        if self.vlabel != other.vlabel ||
+        if self.vnum != other.vnum ||
+            self.vlabel != other.vlabel ||
             self.children.len() != other.children.len() {
             return false;
         }
@@ -40,6 +42,47 @@ impl<V, E> PartialEq for ArrayTreeNode<V, E> where
 impl<V, E> Eq for ArrayTreeNode<V, E> where
     V: Sized + Clone + Eq + Display + Debug,
     E: Sized + Clone + Eq + Display + Debug {}
+
+impl<V, E> ArrayTreeNode<V, E> where
+    V: Sized + Clone + Eq + Display + Debug,
+    E: Sized + Clone + Eq + Display + Debug {
+        fn get_vertex(&self, vertex: VertexNumber) ->
+            Result<Option<&V>, EnceladusError> {
+            match self.children.len() {
+                0 => {
+                    if self.vnum != vertex {
+                        Ok(None)
+                    } else {
+                        Ok(Some(&self.vlabel))
+                    }
+                },
+                _ => {
+                let mut child_result: Option<Result<Option<&V>, EnceladusError>> = None;
+
+                /* depth-first search for specified vertex */
+                for child in &self.children {
+                    child_result = Some(child.1.get_vertex(vertex));
+
+                    if let Some(thing) = child_result {
+                        match thing {
+                            Ok(res) => {
+                                if let Some(_vlabel) = res {
+                                    break
+                                }
+                            },
+                            Err(e) => return Err(e)
+                        }
+                    }
+                }
+                
+                match child_result {
+                    Some(res) => res,
+                    None => Err(EnceladusError::VertexNotFound)
+                }
+            }
+        }
+    }
+}
 
 impl<V, E> PartialEq for ArrayTree<V, E> where
     V: Sized + Clone + Eq + Display + Debug,
@@ -76,7 +119,12 @@ impl<V, E> Tree<V, E> for ArrayTree<V, E> where
 
     fn get_vertex(&self, vertex: VertexNumber) ->
         Result<Option<&V>, EnceladusError> {
-        unimplemented!()
+        match &self.root {
+            Some(root) => {
+                root.get_vertex(vertex)
+            },
+            None => Err(EnceladusError::VertexNotFound)
+        }
     }
 
     fn get_mut_vertex(&mut self, vertex: VertexNumber) ->
