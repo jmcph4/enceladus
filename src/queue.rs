@@ -7,4 +7,3 @@ pub trait Queue<T: Sized + Eq + Clone>: Eq + Clone {
     fn peek(&self) -> Result<&T, EnceladusError>;
     fn length(&self) -> Result<usize, EnceladusError>;
 }
-

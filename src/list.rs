@@ -1,10 +1,11 @@
-use std::ops::{Index, IndexMut};
 use std::fmt::{Debug, Display};
+use std::ops::{Index, IndexMut};
 
 use crate::error::EnceladusError;
 
-pub trait List<T: Sized + Clone + Eq + Display + Debug>: Clone + Eq + Debug +
-    Display + IntoIterator + Index<usize> + IndexMut<usize>  {
+pub trait List<T: Sized + Clone + Eq + Display + Debug>:
+    Clone + Eq + Debug + Display + IntoIterator + Index<usize> + IndexMut<usize>
+{
     fn new() -> Self;
     fn get(&self, pos: usize) -> Result<&T, EnceladusError>;
     fn get_mut(&mut self, pos: usize) -> Result<&mut T, EnceladusError>;
@@ -20,4 +21,3 @@ pub trait List<T: Sized + Clone + Eq + Display + Debug>: Clone + Eq + Debug +
     fn count(&self, elem: T) -> Result<usize, EnceladusError>;
     fn clear(&mut self) -> Result<(), EnceladusError>;
 }
-

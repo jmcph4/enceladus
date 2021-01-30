@@ -1,18 +1,21 @@
 //! An array-based implementation of the list ADT. Uses Rust's `Vec` internally.
 
-use std::ops::{Index, IndexMut};
 use std::fmt;
 use std::fmt::{Debug, Display};
+use std::ops::{Index, IndexMut};
 
 use crate::error::EnceladusError;
 use crate::list::List;
 
 #[derive(Clone, Debug)]
 pub struct ArrayList<T> {
-    elems: Vec<T>
+    elems: Vec<T>,
 }
 
-impl<T> PartialEq for ArrayList<T> where T: Eq {
+impl<T> PartialEq for ArrayList<T>
+where
+    T: Eq,
+{
     fn eq(&self, other: &Self) -> bool {
         if self.elems.len() != other.elems.len() {
             return false;
@@ -47,13 +50,16 @@ impl<T> Index<usize> for ArrayList<T> {
     }
 }
 
-impl<T> IndexMut<usize> for ArrayList<T>  {
+impl<T> IndexMut<usize> for ArrayList<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.elems.get_mut(index).unwrap()
     }
 }
 
-impl<T> Display for ArrayList<T> where T: Display {
+impl<T> Display for ArrayList<T>
+where
+    T: Display,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[")?;
 
@@ -67,57 +73,61 @@ impl<T> Display for ArrayList<T> where T: Display {
     }
 }
 
-impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
+impl<T> List<T> for ArrayList<T>
+where
+    T: Sized + Clone + Eq + Display + Debug,
+{
     fn new() -> Self {
-        ArrayList {
-            elems: Vec::new()
-        }
+        ArrayList { elems: Vec::new() }
     }
 
     /// Returns an immutable reference to the element at the specified position
     /// in the list.
-    /// 
+    ///
     /// # Errors #
     ///
     ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
     ///    the length of the string
     fn get(&self, pos: usize) -> Result<&T, EnceladusError> {
-        if pos >= self.elems.len() { /* bounds check */
+        if pos >= self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
         match self.elems.get(pos) {
             Some(elem) => Ok(elem),
-            None => Err(EnceladusError::OutOfBounds)
+            None => Err(EnceladusError::OutOfBounds),
         }
     }
-    
+
     /// Returns a mutable reference to the element at the specified position in
     /// the list.
-    /// 
+    ///
     /// # Errors #
     ///
     ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
     ///    the length of the list
     fn get_mut(&mut self, pos: usize) -> Result<&mut T, EnceladusError> {
-        if pos >= self.elems.len() { /* bounds check */
+        if pos >= self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
         match self.elems.get_mut(pos) {
             Some(elem) => Ok(elem),
-            None => Err(EnceladusError::OutOfBounds)
+            None => Err(EnceladusError::OutOfBounds),
         }
     }
 
     /// Sets the element at the specified position to the specified value
     ///
     /// # Error #
-    /// 
+    ///
     ///  - `EnceladusError::OutOfBounds` if `pos` is greater than or equal to
     ///    the length of the list
     fn set(&mut self, pos: usize, elem: T) -> Result<(), EnceladusError> {
-        if pos >= self.elems.len() { /* bounds check */
+        if pos >= self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -128,14 +138,15 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
     /// Inserts the specified value at the specified position within the list.
     ///
     /// # Errors #
-    /// 
+    ///
     ///  - `EnceladusError::OutOfBounds` if `pos` is strictly greater than the
     ///    length of the list
     fn insert(&mut self, pos: usize, elem: T) -> Result<(), EnceladusError> {
-        if pos > self.elems.len() { /* bounds check */
+        if pos > self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
-        
+
         self.elems.insert(pos, elem);
         Ok(())
     }
@@ -148,7 +159,8 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
     ///  - `EnceladusError` if `pos` is greater than or equal to the length of
     ///    the list
     fn remove(&mut self, pos: usize) -> Result<T, EnceladusError> {
-        if pos >= self.elems.len() { /* bounds check */
+        if pos >= self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -185,7 +197,8 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
     /// - `EnceladusError::OutOfBounds` if either index is greater than or equal
     ///   to the length of the list
     fn swap(&mut self, a: usize, b: usize) -> Result<(), EnceladusError> {
-        if a >= self.elems.len() || b >= self.elems.len() { /* bounds check */
+        if a >= self.elems.len() || b >= self.elems.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -204,12 +217,12 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
 
         self.elems.insert(a, tmp_b);
         self.elems.insert(b, tmp_a);
-        
+
         Ok(())
     }
 
     /// Determines if whether the specified value is within the list.
-    /// 
+    ///
     /// Uses linear scan, so is O(n) in the size of the list.
     fn contains(&self, elem: T) -> Result<bool, EnceladusError> {
         for element in self.elems.iter() {
@@ -231,7 +244,7 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         for i in 0..self.elems.len() {
             let curr_elem: T = match self.elems.get(i) {
                 Some(curr) => curr.clone(),
-                None => return Ok(None)
+                None => return Ok(None),
             };
 
             if curr_elem == elem {
@@ -250,7 +263,7 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         for i in 0..self.elems.len() {
             let curr_elem: T = match self.elems.get(i) {
                 Some(curr) => curr.clone(),
-                None => return Ok(None)
+                None => return Ok(None),
             };
 
             if curr_elem == elem {
@@ -270,7 +283,7 @@ impl<T> List<T> for ArrayList<T> where T: Sized + Clone + Eq + Display + Debug {
         for i in 0..self.elems.len() {
             let curr_elem: T = match self.elems.get(i) {
                 Some(curr) => curr.clone(),
-                None => return Ok(count)
+                None => return Ok(count),
             };
 
             if curr_elem == elem {
@@ -304,9 +317,7 @@ mod test {
     #[test]
     fn test_new_normal() -> Result<(), EnceladusError> {
         let actual_list: ArrayList<u64> = ArrayList::new();
-        let expected_list: ArrayList<u64> = ArrayList {
-            elems: Vec::new()
-        };
+        let expected_list: ArrayList<u64> = ArrayList { elems: Vec::new() };
 
         assert_eq!(actual_list, expected_list);
         Ok(())
@@ -316,14 +327,14 @@ mod test {
     fn test_get_normal_middle() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 4]
+            elems: vec![1, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res = actual_list.get(2);
         let expected_res = Ok(&3);
 
@@ -337,14 +348,14 @@ mod test {
     fn test_get_normal_head() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 4]
+            elems: vec![1, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res = actual_list.get(0);
         let expected_res = Ok(&1);
 
@@ -358,14 +369,14 @@ mod test {
     fn test_get_normal_tail() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 4]
+            elems: vec![1, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res = actual_list.get(3);
         let expected_res = Ok(&4);
 
@@ -379,14 +390,14 @@ mod test {
     fn test_get_error_out_of_bounds() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 4]
+            elems: vec![1, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res = actual_list.get(4);
         let expected_res = Err(EnceladusError::OutOfBounds);
 
@@ -395,30 +406,30 @@ mod test {
 
         Ok(())
     }
-   
+
     #[test]
     fn test_get_mut_normal_middle() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 6, 4]
+            elems: vec![1, 2, 6, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res: Result<&mut u64, EnceladusError> =
             actual_list.get_mut(2).map(|elem| {
-            *elem *= 2;
-            elem
-        });
+                *elem *= 2;
+                elem
+            });
         let tmp: &mut u64 = &mut 6;
         let expected_res: Result<&mut u64, EnceladusError> = Ok(tmp);
 
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_list.clone(), expected_list);
-        
+
         Ok(())
     }
 
@@ -426,25 +437,25 @@ mod test {
     fn test_get_mut_normal_head() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![2, 2, 3, 4]
+            elems: vec![2, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res: Result<&mut u64, EnceladusError> =
             actual_list.get_mut(0).map(|elem| {
-            *elem *= 2;
-            elem
-        });
+                *elem *= 2;
+                elem
+            });
         let tmp: &mut u64 = &mut 2;
         let expected_res: Result<&mut u64, EnceladusError> = Ok(tmp);
 
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_list, expected_list);
-        
+
         Ok(())
     }
 
@@ -452,25 +463,25 @@ mod test {
     fn test_get_mut_normal_tail() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 8]
+            elems: vec![1, 2, 3, 8],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
+
         let actual_res: Result<&mut u64, EnceladusError> =
             actual_list.get_mut(3).map(|elem| {
-            *elem *= 2;
-            elem
-        });
+                *elem *= 2;
+                elem
+            });
         let tmp: &mut u64 = &mut 8;
         let expected_res: Result<&mut u64, EnceladusError> = Ok(tmp);
-        
+
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_list, expected_list);
-        
+
         Ok(())
     }
 
@@ -478,21 +489,22 @@ mod test {
     fn test_get_mut_error_out_of_bounds() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![1, 2, 3, 4]
+            elems: vec![1, 2, 3, 4],
         };
 
         actual_list.append(1)?;
         actual_list.append(2)?;
         actual_list.append(3)?;
         actual_list.append(4)?;
-        
-        let actual_res: Result<&mut u64, EnceladusError> = actual_list.get_mut(4);
+
+        let actual_res: Result<&mut u64, EnceladusError> =
+            actual_list.get_mut(4);
         let expected_res: Result<&mut u64, EnceladusError> =
             Err(EnceladusError::OutOfBounds);
 
         assert_eq!(actual_res, expected_res);
         assert_eq!(actual_list, expected_list);
-        
+
         Ok(())
     }
 
@@ -500,7 +512,7 @@ mod test {
     fn test_insert_normal_middle() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![3, 10, 12, 33]
+            elems: vec![3, 10, 12, 33],
         };
 
         actual_list.insert(0, 33)?;
@@ -515,9 +527,7 @@ mod test {
     #[test]
     fn test_insert_error_out_of_bounds() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
-        let expected_list: ArrayList<u64> = ArrayList {
-            elems: Vec::new()
-        };
+        let expected_list: ArrayList<u64> = ArrayList { elems: Vec::new() };
 
         let actual_res = actual_list.insert(1, 33);
         let expected_res = Err(EnceladusError::OutOfBounds);
@@ -531,7 +541,7 @@ mod test {
     fn test_remove_normal_middle() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![33, 12, 10]
+            elems: vec![33, 12, 10],
         };
 
         actual_list.append(33)?;
@@ -547,12 +557,12 @@ mod test {
 
         Ok(())
     }
-    
+
     #[test]
     fn test_remove_normal_head() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![12, 1, 10]
+            elems: vec![12, 1, 10],
         };
 
         actual_list.append(33)?;
@@ -573,7 +583,7 @@ mod test {
     fn test_remove_normal_tail() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![33, 12, 1]
+            elems: vec![33, 12, 1],
         };
 
         actual_list.append(33)?;
@@ -594,7 +604,7 @@ mod test {
     fn test_remove_error_out_of_bounds() -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList {
-            elems: vec![33, 12, 1, 10]
+            elems: vec![33, 12, 1, 10],
         };
 
         actual_list.append(33)?;
@@ -603,7 +613,8 @@ mod test {
         actual_list.append(10)?;
 
         let actual_res: Result<u64, EnceladusError> = actual_list.remove(4);
-        let expected_res: Result<u64, EnceladusError> = Err(EnceladusError::OutOfBounds);
+        let expected_res: Result<u64, EnceladusError> =
+            Err(EnceladusError::OutOfBounds);
 
         assert_eq!(actual_list, expected_list);
         assert_eq!(actual_res, expected_res);
@@ -611,4 +622,3 @@ mod test {
         Ok(())
     }
 }
-
