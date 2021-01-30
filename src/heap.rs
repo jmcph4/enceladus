@@ -1,7 +1,7 @@
 //! Heap-based priority queue implementation.
 
-use std::collections::BinaryHeap;
 use std::collections::binary_heap::IntoIter;
+use std::collections::BinaryHeap;
 use std::fmt::{Debug, Display};
 
 use crate::error::EnceladusError;
@@ -9,14 +9,14 @@ use crate::priority_queue::PriorityQueue;
 
 #[derive(Clone, Debug)]
 pub struct Heap<T> {
-    elems: BinaryHeap<T>
+    elems: BinaryHeap<T>,
 }
 
 impl<T: Eq> PartialEq for Heap<T> {
     fn eq(&self, other: &Self) -> bool {
         let mut local_elems: Vec<&T> = Vec::new();
         let mut other_elems: Vec<&T> = Vec::new();
-        
+
         for elem in self.elems.iter() {
             local_elems.push(elem);
         }
@@ -50,11 +50,12 @@ impl<T> IntoIterator for Heap<T> {
     }
 }
 
-impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
-    Heap<T> {
+impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T>
+    for Heap<T>
+{
     fn new() -> Self {
         Heap {
-            elems: BinaryHeap::new()
+            elems: BinaryHeap::new(),
         }
     }
 
@@ -63,29 +64,31 @@ impl<T: Sized + Eq + Clone + Ord + Display + Debug> PriorityQueue<T> for
         self.elems.push(elem);
         Ok(())
     }
-   
+
     /// Removes the element with the highest priority.
     fn pop(&mut self) -> Result<T, EnceladusError> {
-        if self.elems.is_empty() { /* bounds check */
+        if self.elems.is_empty() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
         match self.elems.pop() {
             Some(elem) => Ok(elem),
-            None => Err(EnceladusError::OutOfBounds)
+            None => Err(EnceladusError::OutOfBounds),
         }
     }
 
     /// Returns an immutable reference to the highest priority element in the
     /// queue.
     fn peek(&self) -> Result<&T, EnceladusError> {
-        if self.elems.is_empty() { /* bounds check */
+        if self.elems.is_empty() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
         match self.elems.peek() {
             Some(elem) => Ok(&elem),
-            None => Err(EnceladusError::OutOfBounds)
+            None => Err(EnceladusError::OutOfBounds),
         }
     }
 
@@ -114,7 +117,7 @@ mod tests {
     fn test_new_normal() -> Result<(), EnceladusError> {
         let actual_priority_queue: Heap<u64> = Heap::new();
         let expected_priority_queue: Heap<u64> = Heap {
-            elems: BinaryHeap::new()
+            elems: BinaryHeap::new(),
         };
 
         assert_eq!(actual_priority_queue, expected_priority_queue);
@@ -142,4 +145,3 @@ mod tests {
         Ok(())
     }
 }
-

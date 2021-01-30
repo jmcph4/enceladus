@@ -1,9 +1,9 @@
 //! An array-based separate chaining hash table, implementing the map ADT. Uses
 //! Rust's `Vec` internally
 
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
-use std::collections::hash_map::DefaultHasher;
 
 use crate::error::EnceladusError;
 use crate::map::Map;
@@ -21,17 +21,21 @@ type Bucket<K, V> = Vec<HashMapEntry<K, V>>;
 pub struct HashMap<K, V> {
     buckets: Vec<Bucket<K, V>>,
     num_keys: usize,
-    load_factor: f64
+    load_factor: f64,
 }
 
-impl<K, V> PartialEq for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
-    V: Sized + Eq + Clone + Hash {
+impl<K, V> PartialEq for HashMap<K, V>
+where
+    K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash,
+{
     fn eq(&self, other: &Self) -> bool {
-        if self.num_keys != other.num_keys ||
-            self.buckets.len() != other.buckets.len() {
+        if self.num_keys != other.num_keys
+            || self.buckets.len() != other.buckets.len()
+        {
             return false;
         }
-   
+
         let self_keys: HashSet<K> = self.get_keys();
         let other_keys: HashSet<K> = other.get_keys();
 
@@ -42,11 +46,18 @@ impl<K, V> PartialEq for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     }
 }
 
-impl<K, V> Eq for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
-    V: Sized + Eq + Clone + Hash {}
+impl<K, V> Eq for HashMap<K, V>
+where
+    K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash,
+{
+}
 
-impl<K, V> IntoIterator for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
-    V: Sized + Eq + Clone + Hash {
+impl<K, V> IntoIterator for HashMap<K, V>
+where
+    K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash,
+{
     type Item = (K, V);
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
@@ -55,19 +66,22 @@ impl<K, V> IntoIterator for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     }
 }
 
-impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
-    V: Sized + Eq + Clone + Hash {
+impl<K, V> Map<K, V> for HashMap<K, V>
+where
+    K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash,
+{
     fn new() -> Self {
         let mut buckets_vec: Vec<Bucket<K, V>> = Vec::new();
-        
+
         for _i in 0..INIT_NUM_BUCKETS {
             buckets_vec.push(Bucket::new());
         }
-        
+
         Self {
             buckets: buckets_vec,
             num_keys: 0,
-            load_factor: 0.0
+            load_factor: 0.0,
         }
     }
 
@@ -90,7 +104,8 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         key.hash(&mut hasher);
         let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
 
-        if bucket_index >= self.buckets.len() { /* bounds check */
+        if bucket_index >= self.buckets.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -105,7 +120,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Ok(None)
     }
-    
+
     /// Provides a mutable view to the value associated with the provided key
     /// and `None` if the key is not found.
     ///
@@ -125,7 +140,8 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         key.hash(&mut hasher);
         let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
 
-        if bucket_index >= self.buckets.len() { /* bounds check */
+        if bucket_index >= self.buckets.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -158,8 +174,9 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
         let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
-        
-        if bucket_index >= self.buckets.len() { /* bounds check */
+
+        if bucket_index >= self.buckets.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -175,7 +192,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Err(EnceladusError::KeyNotFound)
     }
-    
+
     /// Inserts the key-value mapping into the hash table
     ///
     /// # Performance #
@@ -197,22 +214,23 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
         let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
-        
-        if bucket_index >= self.buckets.len() { /* bounds check */
+
+        if bucket_index >= self.buckets.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
         let target_bucket: &mut Bucket<K, V> = &mut self.buckets[bucket_index];
-       
-        /* build new entry and append onto target bucket */ 
+
+        /* build new entry and append onto target bucket */
         let new_entry: HashMapEntry<K, V> = HashMapEntry(key, value);
         target_bucket.push(new_entry);
         self.num_keys += 1;
         self.update();
-    
+
         Ok(())
     }
-    
+
     /// Removes the key-value mapping from the hash table.
     ///
     /// # Errors #
@@ -235,8 +253,9 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
         let bucket_index: usize = hasher.finish() as usize % self.buckets.len();
-        
-        if bucket_index >= self.buckets.len() { /* bounds check */
+
+        if bucket_index >= self.buckets.len() {
+            /* bounds check */
             return Err(EnceladusError::OutOfBounds);
         }
 
@@ -281,7 +300,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
 
         Ok(keys.contains(&key))
     }
-    
+
     /// Determines whether or not the provided value is currently stored within
     /// the hash table.
     ///
@@ -305,7 +324,7 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     /// |-------|------|---------|-------|
     /// | Time  | O(1) | O(1)    | O(1)  |
     /// | Space | O(1) | O(1)    | O(1)  |
-    /// 
+    ///
     /// Uses Rust's `Vec::clear` internally to clear bucket container.
     fn clear(&mut self) -> Result<(), EnceladusError> {
         self.buckets.clear();
@@ -315,8 +334,11 @@ impl<K, V> Map<K, V> for HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     }
 }
 
-impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
-    V: Sized + Eq + Clone + Hash {
+impl<K, V> HashMap<K, V>
+where
+    K: Sized + Eq + Clone + Hash,
+    V: Sized + Eq + Clone + Hash,
+{
     /// Returns the current load factor of the hash table
     ///
     /// # Performance #
@@ -324,7 +346,7 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
     /// |-------|------|---------|-------|
     /// | Time  | O(1) | O(1)    | O(1)  |
     /// | Space | O(1) | O(1)    | O(1)  |
-    /// 
+    ///
     /// This method is constant-time as load factor is stored as table metadata.
     pub fn load_factor(&self) -> f64 {
         self.load_factor
@@ -365,7 +387,10 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         }
     }
 
-    fn get_keys(&self) -> HashSet<K> where K: Eq + Hash {
+    fn get_keys(&self) -> HashSet<K>
+    where
+        K: Eq + Hash,
+    {
         let mut res: HashSet<K> = HashSet::new();
 
         for bucket in &self.buckets {
@@ -377,7 +402,10 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
         res
     }
 
-    fn get_values(&self) -> HashSet<V> where V: Eq + Hash {
+    fn get_values(&self) -> HashSet<V>
+    where
+        V: Eq + Hash,
+    {
         let mut res: HashSet<V> = HashSet::new();
 
         for bucket in &self.buckets {
@@ -385,12 +413,12 @@ impl<K, V> HashMap<K, V> where K: Sized + Eq + Clone + Hash,
                 res.insert(entry.1.clone());
             }
         }
-        
+
         res
     }
 
     fn items(&self) -> Vec<(K, V)> {
-        let mut res: Vec<(K, V)> = Vec::new();    
+        let mut res: Vec<(K, V)> = Vec::new();
 
         for key in self.get_keys() {
             res.push((key.clone(), self.get(key).unwrap().unwrap().clone()));
@@ -409,7 +437,7 @@ mod tests {
         let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
 
         let key: String = "Sally".to_string();
-        let value: usize = key.len() as usize;        
+        let value: usize = key.len() as usize;
 
         let actual_res: Result<(), EnceladusError> =
             actual_hashmap.insert(key, value);
@@ -420,13 +448,13 @@ mod tests {
         assert_eq!(actual_hashmap.size()?, 1);
         Ok(())
     }
-    
+
     #[test]
     fn test_remove_normal() -> Result<(), EnceladusError> {
         let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
 
         let key: String = "Sally".to_string();
-        let value: usize = key.len() as usize;        
+        let value: usize = key.len() as usize;
 
         actual_hashmap.insert(key.clone(), value)?;
 
@@ -439,13 +467,13 @@ mod tests {
         assert_eq!(actual_hashmap, expected_hashmap);
         Ok(())
     }
-    
+
     #[test]
     fn test_insert_duplicate() -> Result<(), EnceladusError> {
         let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
 
         let key: String = "Sally".to_string();
-        let value: usize = key.len() as usize;        
+        let value: usize = key.len() as usize;
 
         actual_hashmap.insert(key.clone(), value)?;
 
@@ -466,11 +494,12 @@ mod tests {
         let mut actual_hashmap: HashMap<String, usize> = HashMap::new();
 
         let key: String = "Sally".to_string();
-        let _value: usize = key.len() as usize;        
+        let _value: usize = key.len() as usize;
 
         let actual_res: Result<(), EnceladusError> = actual_hashmap.remove(key);
 
-        let expected_res: Result<(), EnceladusError> = Err(EnceladusError::KeyNotFound);
+        let expected_res: Result<(), EnceladusError> =
+            Err(EnceladusError::KeyNotFound);
         let expected_hashmap: HashMap<String, usize> = HashMap::new();
 
         assert_eq!(actual_res, expected_res);
@@ -478,4 +507,3 @@ mod tests {
         Ok(())
     }
 }
-

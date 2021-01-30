@@ -9,7 +9,7 @@ pub enum EnceladusError {
     OutOfBounds,
     KeyNotFound,
     VertexNotFound,
-    EdgeNotFound
+    EdgeNotFound,
 }
 
 impl Eq for EnceladusError {}
@@ -19,19 +19,18 @@ impl fmt::Display for EnceladusError {
         match self {
             EnceladusError::OutOfBounds => {
                 write!(f, "Requested index is out of bounds")?
-            },
+            }
             EnceladusError::KeyNotFound => {
                 write!(f, "Requested key does not exist")?
-            },
+            }
             EnceladusError::VertexNotFound => {
                 write!(f, "Requested vertex does not exist")?
-            },
+            }
             EnceladusError::EdgeNotFound => {
                 write!(f, "Requested edge does not exist")?
             }
         }
-    
+
         Ok(())
     }
 }
-

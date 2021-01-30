@@ -1,10 +1,16 @@
-use std::fmt::{Display, Debug};
+use std::fmt::{Debug, Display};
 
 use crate::error::EnceladusError;
 use crate::list::List;
 
-pub fn bubblesort<L, T>(list: &mut L, cmp: fn(a: &T, b: &T) -> bool) ->
-    Result<(), EnceladusError> where L: List<T>, T: Eq + Clone + Display + Debug {
+pub fn bubblesort<L, T>(
+    list: &mut L,
+    cmp: fn(a: &T, b: &T) -> bool,
+) -> Result<(), EnceladusError>
+where
+    L: List<T>,
+    T: Eq + Clone + Display + Debug,
+{
     if list.length()? <= 1 {
         return Ok(());
     }
@@ -12,7 +18,7 @@ pub fn bubblesort<L, T>(list: &mut L, cmp: fn(a: &T, b: &T) -> bool) ->
     let n: usize = list.length()?;
 
     for i in 0..n {
-        for j in (i+1..n).rev() {
+        for j in (i + 1..n).rev() {
             if cmp(list.get(j)?, list.get(i)?) {
                 list.swap(i, j)?;
             }
@@ -50,8 +56,8 @@ mod tests {
         expected_list.append(12)?;
         expected_list.append(33)?;
 
-        let actual_res: Result<(), EnceladusError> = bubblesort(&mut actual_list,
-                                                           cmp_leq);
+        let actual_res: Result<(), EnceladusError> =
+            bubblesort(&mut actual_list, cmp_leq);
         let expected_res: Result<(), EnceladusError> = Ok(());
 
         assert_eq!(actual_list, expected_list);
@@ -65,8 +71,8 @@ mod tests {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         let expected_list: ArrayList<u64> = ArrayList::new();
 
-        let actual_res: Result<(), EnceladusError> = bubblesort(&mut actual_list,
-                                                           cmp_leq);
+        let actual_res: Result<(), EnceladusError> =
+            bubblesort(&mut actual_list, cmp_leq);
         let expected_res: Result<(), EnceladusError> = Ok(());
 
         assert_eq!(actual_list, expected_list);
@@ -83,8 +89,8 @@ mod tests {
         let mut expected_list: ArrayList<u64> = ArrayList::new();
         expected_list.append(1)?;
 
-        let actual_res: Result<(), EnceladusError> = bubblesort(&mut actual_list,
-                                                           cmp_leq);
+        let actual_res: Result<(), EnceladusError> =
+            bubblesort(&mut actual_list, cmp_leq);
         let expected_res: Result<(), EnceladusError> = Ok(());
 
         assert_eq!(actual_list, expected_list);
@@ -94,7 +100,8 @@ mod tests {
     }
 
     #[test]
-    pub fn test_bubblesort_normal_sorted_two_elems() -> Result<(), EnceladusError> {
+    pub fn test_bubblesort_normal_sorted_two_elems(
+    ) -> Result<(), EnceladusError> {
         let mut actual_list: ArrayList<u64> = ArrayList::new();
         actual_list.append(1)?;
         actual_list.append(12)?;
@@ -103,8 +110,8 @@ mod tests {
         expected_list.append(1)?;
         expected_list.append(12)?;
 
-        let actual_res: Result<(), EnceladusError> = bubblesort(&mut actual_list,
-                                                           cmp_leq);
+        let actual_res: Result<(), EnceladusError> =
+            bubblesort(&mut actual_list, cmp_leq);
         let expected_res: Result<(), EnceladusError> = Ok(());
 
         assert_eq!(actual_list, expected_list);
@@ -112,6 +119,4 @@ mod tests {
 
         Ok(())
     }
-
 }
-
