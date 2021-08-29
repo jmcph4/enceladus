@@ -1,58 +1,81 @@
-use std::fmt::{Display, Debug};
 use std::fmt;
+use std::fmt::{Debug, Display};
 use std::hash::Hash;
 
 use crate::error::EnceladusError;
-use crate::map::Map;
+use crate::graph::Graph;
 use crate::hashmap::HashMap;
-use crate::graph::{VertexNumber, EdgeNumber, Graph};
+use crate::map::Map;
 
 #[derive(Clone, Debug)]
-pub struct AdjMatGraph<V, E> {
-    num_vertices: usize,                        /* number of vertices */
-    num_edges: usize,                           /* number of edges */
-    adjacency_matrix: Vec<Vec<u64>>,            /* adjacency matrix */
-    endpoints: HashMap<EdgeNumber, (VertexNumber, VertexNumber)>,
-    vertex_labels: HashMap<VertexNumber, V>,    /* vertex labels */
-    edge_labels: HashMap<EdgeNumber, E>         /* edge labels */
+pub struct AdjMatGraph<V, E>
+where
+    V: Clone + Debug + Display + PartialEq + Eq + Hash,
+    E: Clone + Debug + Display + PartialEq + Eq + Hash,
+{
+    num_vertices: usize,             /* number of vertices */
+    num_edges: usize,                /* number of edges */
+    adjacency_matrix: Vec<Vec<u64>>, /* adjacency matrix */
+    endpoints: HashMap<
+        <AdjMatGraph<V, E> as Graph<V, E>>::EdgeNumber,
+        (
+            <AdjMatGraph<V, E> as Graph<V, E>>::VertexNumber,
+            <AdjMatGraph<V, E> as Graph<V, E>>::VertexNumber,
+        ),
+    >,
+    vertex_labels: HashMap<<AdjMatGraph<V, E> as Graph<V, E>>::VertexNumber, V>, /* vertex labels */
+    edge_labels: HashMap<<AdjMatGraph<V, E> as Graph<V, E>>::EdgeNumber, E>,     /* edge labels */
 }
 
-impl<V, E> Display for AdjMatGraph<V, E> where
+impl<V, E> Display for AdjMatGraph<V, E>
+where
     V: Sized + Clone + Eq + Display + Debug + Hash,
-    E: Sized + Clone + Eq + Display + Debug + Hash {
+    E: Sized + Clone + Eq + Display + Debug + Hash,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({},{})", self.num_vertices, self.num_edges)
     }
 }
 
-impl<V, E> PartialEq for AdjMatGraph<V, E> where
+impl<V, E> PartialEq for AdjMatGraph<V, E>
+where
     V: Sized + Clone + Eq + Display + Debug + Hash,
-    E: Sized + Clone + Eq + Display + Debug + Hash {
+    E: Sized + Clone + Eq + Display + Debug + Hash,
+{
     fn eq(&self, other: &Self) -> bool {
         /* check if this is literally the same graph (i.e. automorphism) */
-        if self.num_vertices == other.num_vertices &&
-        self.num_edges == other.num_edges && 
-        self.vertex_labels == other.vertex_labels &&
-        self.edge_labels == other.edge_labels {
+        if self.num_vertices == other.num_vertices
+            && self.num_edges == other.num_edges
+            && self.vertex_labels == other.vertex_labels
+            && self.edge_labels == other.edge_labels
+        {
             return true;
         }
 
-        self.num_vertices == other.num_vertices &&
-        self.num_edges == other.num_edges &&
-        self.adjacency_matrix == other.adjacency_matrix &&
-        self.endpoints == other.endpoints &&
-        self.vertex_labels == other.vertex_labels &&
-        self.edge_labels == other.edge_labels
+        self.num_vertices == other.num_vertices
+            && self.num_edges == other.num_edges
+            && self.adjacency_matrix == other.adjacency_matrix
+            && self.endpoints == other.endpoints
+            && self.vertex_labels == other.vertex_labels
+            && self.edge_labels == other.edge_labels
     }
 }
 
-impl<V, E> Eq for AdjMatGraph<V, E> where
+impl<V, E> Eq for AdjMatGraph<V, E>
+where
     V: Sized + Clone + Eq + Display + Debug + Hash,
-    E: Sized + Clone + Eq + Display + Debug + Hash {}
+    E: Sized + Clone + Eq + Display + Debug + Hash,
+{
+}
 
-impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
+impl<V, E> Graph<V, E> for AdjMatGraph<V, E>
+where
     V: Sized + Clone + Eq + Display + Debug + Hash,
-    E: Sized + Clone + Eq + Display + Debug + Hash {
+    E: Sized + Clone + Eq + Display + Debug + Hash,
+{
+    type VertexNumber = usize;
+    type EdgeNumber = usize;
+
     fn new() -> Self {
         AdjMatGraph {
             num_vertices: 0,
@@ -60,49 +83,45 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
             adjacency_matrix: Vec::new(),
             endpoints: HashMap::new(),
             vertex_labels: HashMap::new(),
-            edge_labels: HashMap::new()
+            edge_labels: HashMap::new(),
         }
     }
 
-    fn get_vertex(&self, vertex: VertexNumber) ->
-    Result<Option<&V>, EnceladusError> {
+    fn get_vertex(&self, vertex: Self::VertexNumber) -> Result<Option<&V>, EnceladusError> {
         self.vertex_labels.get(vertex)
     }
 
-    fn get_mut_vertex(&mut self, vertex: VertexNumber) ->
-    Result<Option<&mut V>, EnceladusError> {
+    fn get_mut_vertex(
+        &mut self,
+        vertex: Self::VertexNumber,
+    ) -> Result<Option<&mut V>, EnceladusError> {
         self.vertex_labels.get_mut(vertex)
     }
 
-    fn set_vertex(&mut self, vertex: VertexNumber, label: V) ->
-    Result<(), EnceladusError> {
+    fn set_vertex(&mut self, vertex: Self::VertexNumber, label: V) -> Result<(), EnceladusError> {
         self.vertex_labels.set(vertex, label)
     }
 
-    fn get_edge(&self, edge: EdgeNumber) ->
-    Result<Option<&E>, EnceladusError> {
+    fn get_edge(&self, edge: Self::EdgeNumber) -> Result<Option<&E>, EnceladusError> {
         self.edge_labels.get(edge)
     }
 
-    fn get_mut_edge(&mut self, edge: EdgeNumber) ->
-    Result<Option<&mut E>, EnceladusError> {
+    fn get_mut_edge(&mut self, edge: Self::EdgeNumber) -> Result<Option<&mut E>, EnceladusError> {
         self.edge_labels.get_mut(edge)
     }
 
-    fn set_edge(&mut self, edge: EdgeNumber, label: E) ->
-    Result<(), EnceladusError> {
+    fn set_edge(&mut self, edge: Self::EdgeNumber, label: E) -> Result<(), EnceladusError> {
         self.edge_labels.set(edge, label)
     }
 
-    fn insert_vertex(&mut self, label: V) ->
-    Result<VertexNumber, EnceladusError> {
+    fn insert_vertex(&mut self, label: V) -> Result<Self::VertexNumber, EnceladusError> {
         /* add vertex label */
         self.vertex_labels.insert(self.num_vertices, label).unwrap();
 
         /* expand adjacency matrix */
         /* add row */
         let mut new_row: Vec<u64> = Vec::new();
-        
+
         for _i in 0..=self.num_vertices {
             new_row.push(0);
         }
@@ -120,14 +139,13 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(self.num_vertices - 1)
     }
 
-    fn remove_vertex(&mut self, vertex: VertexNumber) ->
-    Result<(), EnceladusError> {
+    fn remove_vertex(&mut self, vertex: Self::VertexNumber) -> Result<(), EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
             return Err(EnceladusError::VertexNotFound);
         }
 
         /* prune all edges attached to this vertex */
-        let incident_edges: Vec<EdgeNumber> = self.incident_edges(vertex)?;
+        let incident_edges: Vec<Self::EdgeNumber> = self.incident_edges(vertex)?;
 
         for edge in incident_edges.iter() {
             self.remove_edge(*edge)?;
@@ -140,7 +158,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         self.adjacency_matrix.remove(vertex);
 
         /* remove column */
-        for i in 0..self.num_vertices-1 {
+        for i in 0..self.num_vertices - 1 {
             self.adjacency_matrix[i].remove(vertex);
         }
 
@@ -150,10 +168,13 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(())
     }
 
-    fn insert_edge(&mut self, label: E, a: VertexNumber, b: VertexNumber) ->
-    Result<EdgeNumber, EnceladusError> {
-        if !(self.vertex_labels.contains_key(a)? &&
-            self.vertex_labels.contains_key(b)?) {
+    fn insert_edge(
+        &mut self,
+        label: E,
+        a: Self::VertexNumber,
+        b: Self::VertexNumber,
+    ) -> Result<Self::EdgeNumber, EnceladusError> {
+        if !(self.vertex_labels.contains_key(a)? && self.vertex_labels.contains_key(b)?) {
             return Err(EnceladusError::VertexNotFound);
         }
 
@@ -174,7 +195,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(self.num_edges - 1)
     }
 
-    fn remove_edge(&mut self, edge: EdgeNumber) -> Result<(), EnceladusError> {
+    fn remove_edge(&mut self, edge: Self::EdgeNumber) -> Result<(), EnceladusError> {
         if !self.edge_labels.contains_key(edge)? {
             return Err(EnceladusError::EdgeNotFound);
         }
@@ -183,8 +204,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         self.edge_labels.remove(edge)?;
 
         /* store endpoints for adjacency matrix update */
-        let (a, b): (VertexNumber, VertexNumber) =
-            *self.endpoints.get(edge)?.unwrap();
+        let (a, b): (Self::VertexNumber, Self::VertexNumber) = *self.endpoints.get(edge)?.unwrap();
 
         /* remove entry in endpoints table */
         self.endpoints.remove(edge)?;
@@ -195,19 +215,19 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
 
         /* decrement number of edges */
         self.num_edges -= 1;
-        
+
         Ok(())
     }
 
     fn order(&self) -> Result<usize, EnceladusError> {
-       Ok(self.num_vertices)
+        Ok(self.num_vertices)
     }
 
     fn size(&self) -> Result<usize, EnceladusError> {
         Ok(self.num_edges)
     }
 
-    fn degree(&self, vertex: VertexNumber) -> Result<usize, EnceladusError> {
+    fn degree(&self, vertex: Self::VertexNumber) -> Result<usize, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
             return Err(EnceladusError::VertexNotFound);
         }
@@ -219,44 +239,50 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         }
 
         Ok(degree as usize)
-    } 
+    }
 
-    fn is_adjacent(&self, a: VertexNumber, b: VertexNumber) ->
-    Result<bool, EnceladusError> {
-        if !(self.vertex_labels.contains_key(a)? &&
-            self.vertex_labels.contains_key(b)?) {
+    fn is_adjacent(
+        &self,
+        a: Self::VertexNumber,
+        b: Self::VertexNumber,
+    ) -> Result<bool, EnceladusError> {
+        if !(self.vertex_labels.contains_key(a)? && self.vertex_labels.contains_key(b)?) {
             return Err(EnceladusError::VertexNotFound);
         }
 
         Ok(self.adjacency_matrix[a][b] > 0)
     }
 
-    fn incident_edges(&self, vertex: VertexNumber) ->
-    Result<Vec<EdgeNumber>, EnceladusError> {
+    fn incident_edges(
+        &self,
+        vertex: Self::VertexNumber,
+    ) -> Result<Vec<Self::EdgeNumber>, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
             return Err(EnceladusError::VertexNotFound);
         }
 
-        let mut edges: Vec<EdgeNumber> = Vec::new();
+        let mut edges: Vec<Self::EdgeNumber> = Vec::new();
 
         for i in 0..self.num_edges {
-            let (a, b): (VertexNumber, VertexNumber) =
-                *self.endpoints.get(i)?.unwrap();
-            
+            let (a, b): (Self::VertexNumber, Self::VertexNumber) = *self.endpoints.get(i)?.unwrap();
+
             if vertex == a || vertex == b {
                 edges.push(i);
             }
         }
-    
+
         Ok(edges)
     }
 
-    fn is_incident(&self, vertex: VertexNumber, edge: EdgeNumber) ->
-    Result<bool, EnceladusError> {
+    fn is_incident(
+        &self,
+        vertex: Self::VertexNumber,
+        edge: Self::EdgeNumber,
+    ) -> Result<bool, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
             return Err(EnceladusError::VertexNotFound);
         }
-        
+
         if !self.edge_labels.contains_key(edge)? {
             return Err(EnceladusError::EdgeNotFound);
         }
@@ -264,7 +290,7 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         let mut incident: bool = false;
 
         for curr_edge in 0..self.num_edges {
-            let (a, b): (VertexNumber, VertexNumber) =
+            let (a, b): (Self::VertexNumber, Self::VertexNumber) =
                 *self.endpoints.get(curr_edge)?.unwrap();
 
             if edge == curr_edge && (vertex == a || vertex == b) {
@@ -276,13 +302,15 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(incident)
     }
 
-    fn neighbours(&self, vertex: VertexNumber) ->
-    Result<Vec<VertexNumber>, EnceladusError> {
+    fn neighbours(
+        &self,
+        vertex: Self::VertexNumber,
+    ) -> Result<Vec<Self::VertexNumber>, EnceladusError> {
         if !self.vertex_labels.contains_key(vertex)? {
             return Err(EnceladusError::VertexNotFound);
         }
 
-        let mut neighbours: Vec<VertexNumber> = Vec::new();
+        let mut neighbours: Vec<Self::VertexNumber> = Vec::new();
 
         for i in 0..self.num_vertices {
             if self.adjacency_matrix[vertex][i] > 0 {
@@ -293,8 +321,10 @@ impl<V, E> Graph<V, E> for AdjMatGraph<V, E> where
         Ok(neighbours)
     }
 
-    fn endpoints(&self, edge: EdgeNumber) ->
-    Result<(VertexNumber, VertexNumber), EnceladusError> {
+    fn endpoints(
+        &self,
+        edge: Self::EdgeNumber,
+    ) -> Result<(Self::VertexNumber, Self::VertexNumber), EnceladusError> {
         if !self.edge_labels.contains_key(edge)? {
             return Err(EnceladusError::EdgeNotFound);
         }
@@ -328,10 +358,9 @@ mod tests {
             adjacency_matrix: vec![],
             endpoints: HashMap::new(),
             vertex_labels: HashMap::new(),
-            edge_labels: HashMap::new()        
+            edge_labels: HashMap::new(),
         };
 
         assert_eq!(actual_graph, expected_graph);
     }
 }
-
